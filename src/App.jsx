@@ -1,27 +1,23 @@
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Header from './components/Header'
-import EditorialGallery from './components/EditorialGallery'
+import Footer from './components/Footer'
+import Overview from './pages/Overview'
+import About from './pages/About'
+import Contact from './pages/Contact'
 
 function App() {
   return (
-    <>
+    <BrowserRouter>
       <Header />
       <main>
-        <section className="intro" aria-labelledby="page-title">
-          <div className="intro-title">
-            <h1 id="page-title">Diego Carrasco</h1>
-            <p>Photographer</p>
-          </div>
-          <a className="intro-scroll" href="#selected-work">Selected work ↓</a>
-        </section>
-
-        <EditorialGallery />
+        <Routes>
+          <Route path="/" element={<Overview />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
       </main>
-
-      <footer className="site-footer">
-        <p>© {new Date().getFullYear()} Diego Carrasco</p>
-        <p>Portfolio preview</p>
-      </footer>
-    </>
+      <Footer />
+    </BrowserRouter>
   )
 }
 
