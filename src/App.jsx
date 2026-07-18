@@ -6,11 +6,6 @@ function App() {
     <>
       <Header />
       <main>
-        <section className="intro" aria-label="Portfolio introduction">
-          <p>Photographer</p>
-          <a className="intro-scroll" href="#selected-work">Selected work ↓</a>
-        </section>
-
         <EditorialGallery />
       </main>
 
