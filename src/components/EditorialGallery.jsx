@@ -19,12 +19,7 @@ const photographs = sequence.map((id, index) => {
 
 function EditorialGallery() {
   return (
-    <section className="editorial-gallery" id="selected-work" aria-labelledby="selected-title">
-      <header className="gallery-heading">
-        <p id="selected-title">Selected work</p>
-        <p>Wedding · A&amp;P</p>
-      </header>
-
+    <section className="editorial-gallery" id="selected-work" aria-label="Wedding photography selection">
       <div className="gallery-sequence">
         {photographs.map((photo, index) => (
           <figure className={`gallery-item gallery-item--${photo.layout}`} key={photo.src}>
