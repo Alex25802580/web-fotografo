@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 const navigation = [
+  { label: 'Home', to: '/' },
   { label: 'Weddings', to: '/#selected-work' },
   { label: 'Personal', to: '/#selected-work' },
   { label: 'About', to: '/about' },
