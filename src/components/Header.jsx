@@ -1,42 +1,40 @@
 import { useEffect, useState } from 'react'
 
-const links = [
-  { label: 'Trabajo', href: '#trabajo' },
-  { label: 'Sobre mí', href: '#sobre-mi' },
-  { label: 'Contacto', href: '#contacto' },
+const navigation = [
+  { label: 'Overview', href: '#selected-work' },
+  { label: 'Weddings', href: '#weddings' },
+  { label: 'Couples', href: '#couples' },
+  { label: 'Editorial', href: '#editorial' },
+  { label: 'Personal', href: '#personal' },
+  { label: 'About', href: '#about' },
+  { label: 'Contact', href: '#contact' },
 ]
 
 function Header() {
-  const [menuOpen, setMenuOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
-    document.body.classList.toggle('menu-open', menuOpen)
+    document.body.classList.toggle('menu-open', isOpen)
     return () => document.body.classList.remove('menu-open')
-  }, [menuOpen])
+  }, [isOpen])
 
   return (
     <header className="site-header">
-      <a className="brand" href="#inicio" aria-label="Inicio">
-        <span>Álex</span> <span>Rivera</span>
-      </a>
+      <a className="brand" href="#top" onClick={() => setIsOpen(false)}>Diego Carrasco</a>
 
       <button
-        className="menu-button"
+        className="menu-toggle"
         type="button"
-        aria-expanded={menuOpen}
-        aria-controls="main-navigation"
-        onClick={() => setMenuOpen((open) => !open)}
+        aria-expanded={isOpen}
+        aria-controls="navigation"
+        onClick={() => setIsOpen((current) => !current)}
       >
-        <span className="sr-only">{menuOpen ? 'Cerrar menú' : 'Abrir menú'}</span>
-        <span aria-hidden="true" />
-        <span aria-hidden="true" />
+        <span>{isOpen ? 'Close' : 'Menu'}</span>
       </button>
 
-      <nav id="main-navigation" className={menuOpen ? 'main-nav is-open' : 'main-nav'} aria-label="Principal">
-        {links.map((link) => (
-          <a key={link.href} href={link.href} onClick={() => setMenuOpen(false)}>
-            {link.label}
-          </a>
+      <nav id="navigation" className={isOpen ? 'navigation is-open' : 'navigation'} aria-label="Main navigation">
+        {navigation.map((item) => (
+          <a key={item.label} href={item.href} onClick={() => setIsOpen(false)}>{item.label}</a>
         ))}
       </nav>
     </header>

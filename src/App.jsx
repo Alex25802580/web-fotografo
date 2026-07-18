@@ -1,21 +1,26 @@
 import Header from './components/Header'
-import Hero from './components/Hero'
-import PortfolioGrid from './components/PortfolioGrid'
-import About from './components/About'
-import Contact from './components/Contact'
-import Footer from './components/Footer'
+import EditorialGallery from './components/EditorialGallery'
 
 function App() {
   return (
     <>
       <Header />
       <main>
-        <Hero />
-        <PortfolioGrid />
-        <About />
-        <Contact />
+        <section className="intro" aria-labelledby="page-title">
+          <div className="intro-title">
+            <h1 id="page-title">Diego Carrasco</h1>
+            <p>Photographer</p>
+          </div>
+          <a className="intro-scroll" href="#selected-work">Selected work ↓</a>
+        </section>
+
+        <EditorialGallery />
       </main>
-      <Footer />
+
+      <footer className="site-footer">
+        <p>© {new Date().getFullYear()} Diego Carrasco</p>
+        <p>Portfolio preview</p>
+      </footer>
     </>
   )
 }
