@@ -18,20 +18,20 @@ button { color: inherit; font: inherit; }
 img { display: block; max-width: 100%; }
 
 .site-header {
-  position: fixed;
+  position: relative;
   z-index: 20;
-  top: 0;
-  left: 0;
   display: flex;
   width: 100%;
-  min-height: 5.5rem;
+  min-height: 12rem;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--page-padding);
-  background: rgba(255, 255, 255, .96);
+  justify-content: center;
+  gap: 2rem;
+  padding: 3rem var(--page-padding) 2rem;
+  background: #fff;
 }
 
-.brand { font-size: .82rem; font-weight: 400; letter-spacing: .08em; text-transform: uppercase; }
+.brand { font-size: clamp(2.25rem, 5vw, 5rem); font-weight: 300; letter-spacing: .04em; line-height: 1; text-align: center; text-transform: uppercase; }
 .navigation { display: flex; align-items: center; gap: clamp(1.1rem, 2vw, 2.2rem); }
 .navigation a { font-size: .68rem; font-weight: 300; letter-spacing: .08em; text-transform: uppercase; }
 .navigation a::after { display: block; width: 100%; height: 1px; margin-top: .28rem; background: currentColor; content: ''; transform: scaleX(0); transform-origin: right; transition: transform .25s ease; }
@@ -41,14 +41,13 @@ img { display: block; max-width: 100%; }
 .intro {
   position: relative;
   display: grid;
-  min-height: 88svh;
+  min-height: calc(88svh - 12rem);
   place-items: center;
-  padding: 8rem var(--page-padding) 5rem;
+  padding: 3rem var(--page-padding) 5rem;
   text-align: center;
 }
 
-.intro-title h1 { margin: 0; font-size: clamp(2rem, 4vw, 4.25rem); font-weight: 300; letter-spacing: .035em; line-height: 1; text-transform: uppercase; }
-.intro-title p { margin: 1rem 0 0; color: #757575; font-size: .65rem; font-weight: 300; letter-spacing: .22em; text-transform: uppercase; }
+.intro > p { margin: 0; color: #757575; font-size: .65rem; font-weight: 300; letter-spacing: .22em; text-transform: uppercase; }
 .intro-scroll { position: absolute; bottom: 2.2rem; left: 50%; font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; transform: translateX(-50%); }
 
 .editorial-gallery { padding: 4rem var(--page-padding) clamp(8rem, 14vw, 14rem); }
@@ -69,13 +68,13 @@ img { display: block; max-width: 100%; }
 .site-footer p { margin: 0; font-size: .58rem; font-weight: 300; letter-spacing: .1em; text-transform: uppercase; }
 
 @media (max-width: 800px) {
-  .site-header { min-height: 4.5rem; }
-  .menu-toggle { position: relative; z-index: 22; display: block; padding: .75rem 0 .75rem 1rem; cursor: pointer; }
+  .site-header { min-height: 9rem; gap: 1.4rem; padding: 2rem var(--page-padding) 1.5rem; }
+  .brand { font-size: clamp(2rem, 10vw, 3.25rem); }
+  .menu-toggle { position: relative; z-index: 22; display: block; padding: .5rem; cursor: pointer; }
   .navigation { position: fixed; inset: 0; z-index: 21; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 1.4rem; padding: var(--page-padding); background: #fff; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
   .navigation.is-open { opacity: 1; pointer-events: auto; }
   .navigation a { font-size: clamp(1.5rem, 8vw, 2.4rem); font-weight: 300; letter-spacing: .02em; text-transform: none; }
-  .intro { min-height: 82svh; }
-  .intro-title h1 { font-size: clamp(1.85rem, 9vw, 3rem); }
+  .intro { min-height: calc(82svh - 9rem); }
   .gallery-sequence { display: block; padding-top: 5rem; }
   .gallery-item { width: 100%; margin: 0 0 7rem; }
   .portrait-right { width: 64%; margin-left: auto; }
