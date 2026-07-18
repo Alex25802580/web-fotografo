@@ -4,6 +4,7 @@ import Footer from './components/Footer'
 import Overview from './pages/Overview'
 import About from './pages/About'
 import Contact from './pages/Contact'
+import ScrollToTop from './components/ScrollToTop'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         </Routes>
       </main>
       <Footer />
+      <ScrollToTop />
     </BrowserRouter>
   )
 }
