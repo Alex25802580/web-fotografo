@@ -20,7 +20,9 @@ function Header() {
 
   return (
     <header className="site-header">
-      <a className="brand" href="#top" onClick={() => setIsOpen(false)}>Diego Carrasco</a>
+      <a className="brand" href="#top" onClick={() => setIsOpen(false)}>
+        Diego Carrasco
+      </a>
 
       <button
         className="menu-toggle"
