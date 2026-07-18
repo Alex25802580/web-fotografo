@@ -1,11 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 const navigation = [
-  { label: 'Overview', to: '/' },
   { label: 'Weddings', to: '/#selected-work' },
-  { label: 'Couples', to: '/#selected-work' },
-  { label: 'Editorial', to: '/#selected-work' },
   { label: 'Personal', to: '/#selected-work' },
   { label: 'About', to: '/about' },
   { label: 'Contact', to: '/contact' },
@@ -35,9 +32,9 @@ function Header() {
 
       <nav id="navigation" className={isOpen ? 'navigation is-open' : 'navigation'} aria-label="Main navigation">
         {navigation.map((item) => (
-          <NavLink key={item.label} to={item.to} onClick={() => setIsOpen(false)}>
+          <Link key={item.label} to={item.to} onClick={() => setIsOpen(false)}>
             {item.label}
-          </NavLink>
+          </Link>
         ))}
       </nav>
     </header>
