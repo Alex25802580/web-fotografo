@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
+import { Link, NavLink } from 'react-router-dom'
 
 const navigation = [
-  { label: 'Overview', href: '#selected-work' },
-  { label: 'Weddings', href: '#weddings' },
-  { label: 'Couples', href: '#couples' },
-  { label: 'Editorial', href: '#editorial' },
-  { label: 'Personal', href: '#personal' },
-  { label: 'About', href: '#about' },
-  { label: 'Contact', href: '#contact' },
+  { label: 'Overview', to: '/' },
+  { label: 'Weddings', to: '/#selected-work' },
+  { label: 'Couples', to: '/#selected-work' },
+  { label: 'Editorial', to: '/#selected-work' },
+  { label: 'Personal', to: '/#selected-work' },
+  { label: 'About', to: '/about' },
+  { label: 'Contact', to: '/contact' },
 ]
 
 function Header() {
@@ -20,9 +21,7 @@ function Header() {
 
   return (
     <header className="site-header">
-      <a className="brand" href="#top" onClick={() => setIsOpen(false)}>
-        Diego Carrasco
-      </a>
+      <Link className="brand" to="/" onClick={() => setIsOpen(false)}>Diego Carrasco</Link>
 
       <button
         className="menu-toggle"
@@ -31,12 +30,14 @@ function Header() {
         aria-controls="navigation"
         onClick={() => setIsOpen((current) => !current)}
       >
-        <span>{isOpen ? 'Close' : 'Menu'}</span>
+        {isOpen ? 'Close' : 'Menu'}
       </button>
 
       <nav id="navigation" className={isOpen ? 'navigation is-open' : 'navigation'} aria-label="Main navigation">
         {navigation.map((item) => (
-          <a key={item.label} href={item.href} onClick={() => setIsOpen(false)}>{item.label}</a>
+          <NavLink key={item.label} to={item.to} onClick={() => setIsOpen(false)}>
+            {item.label}
+          </NavLink>
         ))}
       </nav>
     </header>
