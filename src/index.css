@@ -26,9 +26,9 @@ img { display: block; max-width: 100%; }
   min-height: 5rem;
   align-items: center;
   justify-content: flex-start;
-  gap: clamp(2rem, 5vw, 6rem);
+  gap: clamp(24rem, 8vw, 10rem);
   padding: 0 var(--page-padding);
-  background: rgba(255, 255, 255, .96);
+  background: #fff;
   border-bottom: 1px solid #eee;
 }
 
@@ -39,7 +39,7 @@ img { display: block; max-width: 100%; }
 .navigation a:hover::after, .navigation a:focus-visible::after { transform: scaleX(1); transform-origin: left; }
 .menu-toggle { display: none; border: 0; background: none; font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; }
 
-.editorial-gallery { padding: 2rem var(--page-padding) clamp(5rem, 8vw, 8rem); }
+.editorial-gallery { padding: 5rem var(--page-padding) clamp(5rem, 8vw, 8rem); }
 .gallery-sequence { display: grid; grid-template-columns: repeat(12, 1fr); gap: clamp(2rem, 4vw, 4.5rem) clamp(1rem, 2vw, 2.5rem); }
 .gallery-item { margin: 0; }
 .gallery-item img { width: 100%; height: auto; }
