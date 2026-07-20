@@ -8,6 +8,7 @@ import About from './pages/About'
 import Contact from './pages/Contact'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
+import './admin.css'
 
 function AppContent() {
   const location = useLocation()
