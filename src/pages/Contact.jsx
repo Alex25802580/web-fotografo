@@ -10,13 +10,8 @@ function Contact() {
 
   return (
     <section className="text-page contact-page" aria-labelledby="contact-title">
-      <div className="contact-intro">
-        <p className="page-kicker">Contact</p>
-        <h1 id="contact-title">Cuéntame vuestra historia.</h1>
-        <p>Fechas, lugares, ideas o simplemente una primera conversación.</p>
-      </div>
-
-      <form className="contact-form" onSubmit={handleSubmit}>
+      <form className="contact-form" onSubmit={handleSubmit} aria-label="Formulario de contacto">
+        <h1 id="contact-title">Contacto</h1>
         <label>
           Nombre
           <input type="text" name="name" autoComplete="name" required />
