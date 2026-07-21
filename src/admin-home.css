@@ -1,0 +1,21 @@
+.admin-home-button {
+  position: fixed;
+  z-index: 50;
+  top: clamp(1.25rem, 3vw, 3rem);
+  right: clamp(8.5rem, 12vw, 10.5rem);
+  padding: .85rem 1.1rem;
+  border: 1px solid #111;
+  background: transparent;
+  color: #111;
+  font-size: .65rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 760px) {
+  .admin-home-button {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+  }
+}
