@@ -1,20 +1,17 @@
 import { useEffect, useState } from 'react'
-import { Link, useLocation, useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
+import PhotoLightbox from '../components/PhotoLightbox'
 import { supabase } from '../lib/supabase'
 
 const BUCKET = 'PORTFOLIO'
-const layouts = [
-  'wide', 'portrait', 'medium', 'small', 'portrait',
-  'medium', 'wide', 'small', 'portrait', 'medium',
-  'small', 'wide', 'portrait', 'medium', 'small',
-]
 
 function CategoryPage() {
   const { categorySlug: routeSlug } = useParams()
   const location = useLocation()
   const categorySlug = routeSlug || location.pathname.replace(/^\//, '')
-  const [category, setCategory] = useState(null)
-  const [photographs, setPhotographs] = useState([])
+  const [categoryName, setCategoryName] = useState('')
+  const [photos, setPhotos] = useState([])
+  const [activePhotoIndex, setActivePhotoIndex] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -22,10 +19,11 @@ function CategoryPage() {
     const loadCategory = async () => {
       setLoading(true)
       setError('')
+      setActivePhotoIndex(null)
 
       const { data: categoryData, error: categoryError } = await supabase
         .from('categories')
-        .select('*')
+        .select('id, name')
         .eq('slug', categorySlug)
         .single()
 
@@ -37,7 +35,7 @@ function CategoryPage() {
 
       const { data: galleryData, error: galleriesError } = await supabase
         .from('galleries')
-        .select('id, slug, position')
+        .select('id, position')
         .eq('category_id', categoryData.id)
         .eq('published', true)
         .order('position')
@@ -48,47 +46,40 @@ function CategoryPage() {
         return
       }
 
-      const galleries = galleryData || []
-      const galleryIds = galleries.map((gallery) => gallery.id)
+      const galleryIds = (galleryData || []).map((gallery) => gallery.id)
+      let photoData = []
 
-      if (galleryIds.length === 0) {
-        setCategory(categoryData)
-        setPhotographs([])
-        setLoading(false)
-        return
-      }
+      if (galleryIds.length > 0) {
+        const { data, error: photosError } = await supabase
+          .from('photos')
+          .select('*')
+          .in('gallery_id', galleryIds)
+          .eq('published', true)
+          .order('position')
 
-      const { data: photosData, error: photosError } = await supabase
-        .from('photos')
-        .select('*')
-        .in('gallery_id', galleryIds)
-        .eq('published', true)
-        .order('position')
+        if (photosError) {
+          setError(photosError.message)
+          setLoading(false)
+          return
+        }
 
-      if (photosError) {
-        setError(photosError.message)
-        setLoading(false)
-        return
-      }
+        const galleryOrder = Object.fromEntries(
+          (galleryData || []).map((gallery, index) => [gallery.id, index]),
+        )
 
-      const galleryById = Object.fromEntries(galleries.map((gallery) => [gallery.id, gallery]))
-      const orderedPhotos = (photosData || [])
-        .map((photo) => ({
-          ...photo,
-          gallery: galleryById[photo.gallery_id],
-        }))
-        .sort((a, b) => {
-          const galleryDifference = (a.gallery?.position || 0) - (b.gallery?.position || 0)
-          return galleryDifference || a.position - b.position
+        photoData = (data || []).sort((first, second) => {
+          const galleryDifference = galleryOrder[first.gallery_id] - galleryOrder[second.gallery_id]
+          return galleryDifference || first.position - second.position
         })
-        .map((photo, index) => ({
-          ...photo,
-          src: supabase.storage.from(BUCKET).getPublicUrl(photo.storage_path).data.publicUrl,
-          layout: layouts[index % layouts.length],
-        }))
+      }
 
-      setCategory(categoryData)
-      setPhotographs(orderedPhotos)
+      setCategoryName(categoryData.name)
+      setPhotos(
+        photoData.map((photo) => ({
+          ...photo,
+          publicUrl: supabase.storage.from(BUCKET).getPublicUrl(photo.storage_path).data.publicUrl,
+        })),
+      )
       setLoading(false)
     }
 
@@ -99,27 +90,35 @@ function CategoryPage() {
   if (error) return <main className="public-status-page">{error}</main>
 
   return (
-    <main className="category-page" aria-label={category?.name || 'Categoría fotográfica'}>
-      {photographs.length === 0 ? (
+    <main className="category-page category-page--photos-only">
+      {photos.length === 0 ? (
         <p className="empty-gallery-message">Todavía no hay fotografías publicadas.</p>
       ) : (
-        <section className="gallery-sequence category-photo-grid">
-          {photographs.map((photo, index) => (
-            <Link
-              className={`gallery-item gallery-item--${photo.layout}`}
-              to={`/gallery/${photo.gallery.slug}`}
+        <section className="photo-grid" aria-label={`Fotografías de ${categoryName}`}>
+          {photos.map((photo, index) => (
+            <button
+              className="photo-grid-item"
+              type="button"
               key={photo.id}
-              aria-label={`Abrir galería ${photo.gallery.slug}`}
+              onClick={() => setActivePhotoIndex(index)}
+              aria-label={`Abrir fotografía ${index + 1}`}
             >
               <img
-                src={photo.src}
+                src={photo.publicUrl}
                 alt={photo.alt_text || `Fotografía ${index + 1}`}
-                loading={index < 4 ? 'eager' : 'lazy'}
+                loading={index < 6 ? 'eager' : 'lazy'}
               />
-            </Link>
+            </button>
           ))}
         </section>
       )}
+
+      <PhotoLightbox
+        photos={photos}
+        activeIndex={activePhotoIndex}
+        onClose={() => setActivePhotoIndex(null)}
+        onChange={setActivePhotoIndex}
+      />
     </main>
   )
 }
