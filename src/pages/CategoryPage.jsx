@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 
 const BUCKET = 'PORTFOLIO'
 
 function CategoryPage() {
-  const { categorySlug } = useParams()
+  const { categorySlug: routeSlug } = useParams()
+  const location = useLocation()
+  const categorySlug = routeSlug || location.pathname.replace(/^\//, '')
   const [category, setCategory] = useState(null)
   const [galleries, setGalleries] = useState([])
   const [loading, setLoading] = useState(true)
