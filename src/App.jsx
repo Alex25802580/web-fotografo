@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
@@ -16,10 +16,12 @@ import './admin-upload.css'
 function AppContent() {
   const location = useLocation()
   const isAdminRoute = location.pathname.startsWith('/admin')
+  const isAdminDashboard = location.pathname === '/admin'
 
   return (
     <>
       {!isAdminRoute && <Header />}
+      {isAdminDashboard && <Link className="admin-home-button" to="/">Home</Link>}
       <Routes>
         <Route path="/" element={<Overview />} />
         <Route path="/weddings" element={<CategoryPage />} />
