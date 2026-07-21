@@ -13,6 +13,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import './admin.css'
 import './admin-upload.css'
 import './admin-home.css'
+import './public-gallery.css'
 
 function AppContent() {
   const location = useLocation()
