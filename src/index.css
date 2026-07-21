@@ -49,6 +49,72 @@ img { display: block; max-width: 100%; }
 .gallery-item--portrait { grid-column: span 4; align-self: center; }
 .gallery-item:nth-child(3n + 2) { justify-self: end; }
 
+.category-page,
+.gallery-page {
+  min-height: 70svh;
+  padding: clamp(3rem, 7vw, 7rem) var(--page-padding) clamp(6rem, 10vw, 10rem);
+}
+
+.category-heading,
+.gallery-heading {
+  margin-bottom: clamp(3rem, 7vw, 7rem);
+}
+
+.category-heading p,
+.gallery-heading p {
+  margin: 0 0 1rem;
+  font-size: .62rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.category-heading h1,
+.gallery-heading h1 {
+  margin: 0;
+  font-size: clamp(2.8rem, 7vw, 7rem);
+  font-weight: 300;
+  letter-spacing: -.045em;
+  line-height: .95;
+}
+
+.gallery-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(3rem, 7vw, 8rem) clamp(1.25rem, 3vw, 3rem);
+}
+
+.gallery-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.gallery-card img,
+.gallery-card-placeholder {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: #f1f1ef;
+}
+
+.gallery-card h2 {
+  margin: 0;
+  font-size: clamp(1.1rem, 2vw, 1.6rem);
+  font-weight: 300;
+}
+
+.gallery-page .gallery-sequence {
+  padding-top: 0;
+}
+
+.public-status-page,
+.empty-gallery-message {
+  min-height: 55svh;
+  margin: 0;
+  padding: clamp(4rem, 8vw, 8rem) var(--page-padding);
+  color: #555;
+  font-size: .9rem;
+}
+
 .text-page { min-height: 65svh; padding: clamp(4rem, 8vw, 8rem) var(--page-padding) clamp(7rem, 11vw, 11rem); border-top: 1px solid #ddd; }
 .page-kicker { margin: 0 0 clamp(3rem, 7vw, 7rem); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; }
 .text-page h1 { margin: 0; font-size: clamp(2.5rem, 6vw, 6rem); font-weight: 300; letter-spacing: -.035em; line-height: .98; }
@@ -85,6 +151,7 @@ img { display: block; max-width: 100%; }
   .gallery-item--medium { grid-column: span 6; }
   .gallery-item--small, .gallery-item--portrait { grid-column: span 4; }
   .gallery-item:nth-child(even).gallery-item--small, .gallery-item:nth-child(even).gallery-item--portrait { grid-column: 3 / span 4; }
+  .gallery-cards { grid-template-columns: 1fr; }
   .about-layout { grid-template-columns: 1fr; }
   .about-layout { gap: 3rem; }
   .about-portrait { width: min(86%, 30rem); }
