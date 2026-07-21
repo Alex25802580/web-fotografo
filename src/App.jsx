@@ -11,6 +11,7 @@ import GalleryPage from './pages/GalleryPage'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
 import './admin.css'
+import './admin-upload.css'
 
 function AppContent() {
   const location = useLocation()
