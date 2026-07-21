@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import PhotoLightbox from '../components/PhotoLightbox'
 import { supabase } from '../lib/supabase'
 
 const BUCKET = 'PORTFOLIO'
-const layouts = ['wide', 'portrait', 'medium', 'small', 'portrait', 'medium']
 
 function GalleryPage() {
   const { gallerySlug } = useParams()
   const [gallery, setGallery] = useState(null)
   const [photos, setPhotos] = useState([])
+  const [activePhotoIndex, setActivePhotoIndex] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -16,6 +17,7 @@ function GalleryPage() {
     const loadGallery = async () => {
       setLoading(true)
       setError('')
+      setActivePhotoIndex(null)
 
       const { data: galleryData, error: galleryError } = await supabase
         .from('galleries')
@@ -60,27 +62,35 @@ function GalleryPage() {
   if (error) return <main className="public-status-page">{error}</main>
 
   return (
-    <main className="gallery-page">
-      <header className="gallery-heading">
-        <p>{gallery?.categories?.name}</p>
-        <h1>{gallery?.title}</h1>
-      </header>
-
+    <main className="gallery-page gallery-page--photos-only">
       {photos.length === 0 ? (
         <p className="empty-gallery-message">Esta galería todavía no tiene fotografías publicadas.</p>
       ) : (
-        <section className="gallery-sequence" aria-label={gallery?.title}>
+        <section className="photo-grid" aria-label={gallery?.title}>
           {photos.map((photo, index) => (
-            <figure className={`gallery-item gallery-item--${layouts[index % layouts.length]}`} key={photo.id}>
+            <button
+              className="photo-grid-item"
+              type="button"
+              key={photo.id}
+              onClick={() => setActivePhotoIndex(index)}
+              aria-label={`Abrir fotografía ${index + 1}`}
+            >
               <img
                 src={photo.publicUrl}
                 alt={photo.alt_text || `${gallery?.title} ${index + 1}`}
-                loading={index < 4 ? 'eager' : 'lazy'}
+                loading={index < 6 ? 'eager' : 'lazy'}
               />
-            </figure>
+            </button>
           ))}
         </section>
       )}
+
+      <PhotoLightbox
+        photos={photos}
+        activeIndex={activePhotoIndex}
+        onClose={() => setActivePhotoIndex(null)}
+        onChange={setActivePhotoIndex}
+      />
     </main>
   )
 }
