@@ -3,13 +3,18 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 
 const BUCKET = 'PORTFOLIO'
+const layouts = [
+  'wide', 'portrait', 'medium', 'small', 'portrait',
+  'medium', 'wide', 'small', 'portrait', 'medium',
+  'small', 'wide', 'portrait', 'medium', 'small',
+]
 
 function CategoryPage() {
   const { categorySlug: routeSlug } = useParams()
   const location = useLocation()
   const categorySlug = routeSlug || location.pathname.replace(/^\//, '')
   const [category, setCategory] = useState(null)
-  const [galleries, setGalleries] = useState([])
+  const [photographs, setPhotographs] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -32,7 +37,7 @@ function CategoryPage() {
 
       const { data: galleryData, error: galleriesError } = await supabase
         .from('galleries')
-        .select('*')
+        .select('id, slug, position')
         .eq('category_id', categoryData.id)
         .eq('published', true)
         .order('position')
@@ -43,38 +48,47 @@ function CategoryPage() {
         return
       }
 
-      const galleryIds = (galleryData || []).map((gallery) => gallery.id)
-      let photos = []
+      const galleries = galleryData || []
+      const galleryIds = galleries.map((gallery) => gallery.id)
 
-      if (galleryIds.length > 0) {
-        const { data: photosData, error: photosError } = await supabase
-          .from('photos')
-          .select('*')
-          .in('gallery_id', galleryIds)
-          .eq('published', true)
-          .order('position')
-
-        if (photosError) {
-          setError(photosError.message)
-          setLoading(false)
-          return
-        }
-
-        photos = photosData || []
+      if (galleryIds.length === 0) {
+        setCategory(categoryData)
+        setPhotographs([])
+        setLoading(false)
+        return
       }
 
-      const galleriesWithCover = (galleryData || []).map((gallery) => {
-        const coverPhoto = photos.find((photo) => photo.gallery_id === gallery.id)
-        const coverPath = gallery.cover_path || coverPhoto?.storage_path
-        const coverUrl = coverPath
-          ? supabase.storage.from(BUCKET).getPublicUrl(coverPath).data.publicUrl
-          : null
+      const { data: photosData, error: photosError } = await supabase
+        .from('photos')
+        .select('*')
+        .in('gallery_id', galleryIds)
+        .eq('published', true)
+        .order('position')
 
-        return { ...gallery, coverUrl }
-      })
+      if (photosError) {
+        setError(photosError.message)
+        setLoading(false)
+        return
+      }
+
+      const galleryById = Object.fromEntries(galleries.map((gallery) => [gallery.id, gallery]))
+      const orderedPhotos = (photosData || [])
+        .map((photo) => ({
+          ...photo,
+          gallery: galleryById[photo.gallery_id],
+        }))
+        .sort((a, b) => {
+          const galleryDifference = (a.gallery?.position || 0) - (b.gallery?.position || 0)
+          return galleryDifference || a.position - b.position
+        })
+        .map((photo, index) => ({
+          ...photo,
+          src: supabase.storage.from(BUCKET).getPublicUrl(photo.storage_path).data.publicUrl,
+          layout: layouts[index % layouts.length],
+        }))
 
       setCategory(categoryData)
-      setGalleries(galleriesWithCover)
+      setPhotographs(orderedPhotos)
       setLoading(false)
     }
 
@@ -85,24 +99,23 @@ function CategoryPage() {
   if (error) return <main className="public-status-page">{error}</main>
 
   return (
-    <main className="category-page">
-      <header className="category-heading">
-        <p>Portfolio</p>
-        <h1>{category?.name}</h1>
-      </header>
-
-      {galleries.length === 0 ? (
-        <p className="empty-gallery-message">Todavía no hay galerías publicadas.</p>
+    <main className="category-page" aria-label={category?.name || 'Categoría fotográfica'}>
+      {photographs.length === 0 ? (
+        <p className="empty-gallery-message">Todavía no hay fotografías publicadas.</p>
       ) : (
-        <section className="gallery-cards" aria-label={`Galerías de ${category?.name}`}>
-          {galleries.map((gallery) => (
-            <Link className="gallery-card" to={`/gallery/${gallery.slug}`} key={gallery.id}>
-              {gallery.coverUrl ? (
-                <img src={gallery.coverUrl} alt={gallery.title} loading="lazy" />
-              ) : (
-                <div className="gallery-card-placeholder" aria-hidden="true" />
-              )}
-              <h2>{gallery.title}</h2>
+        <section className="gallery-sequence category-photo-grid">
+          {photographs.map((photo, index) => (
+            <Link
+              className={`gallery-item gallery-item--${photo.layout}`}
+              to={`/gallery/${photo.gallery.slug}`}
+              key={photo.id}
+              aria-label={`Abrir galería ${photo.gallery.slug}`}
+            >
+              <img
+                src={photo.src}
+                alt={photo.alt_text || `Fotografía ${index + 1}`}
+                loading={index < 4 ? 'eager' : 'lazy'}
+              />
             </Link>
           ))}
         </section>
