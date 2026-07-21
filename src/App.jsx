@@ -6,6 +6,8 @@ import ProtectedAdminRoute from './components/ProtectedAdminRoute'
 import Overview from './pages/Overview'
 import About from './pages/About'
 import Contact from './pages/Contact'
+import CategoryPage from './pages/CategoryPage'
+import GalleryPage from './pages/GalleryPage'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
 import './admin.css'
@@ -19,6 +21,10 @@ function AppContent() {
       {!isAdminRoute && <Header />}
       <Routes>
         <Route path="/" element={<Overview />} />
+        <Route path="/weddings" element={<CategoryPage />} />
+        <Route path="/personal" element={<CategoryPage />} />
+        <Route path="/category/:categorySlug" element={<CategoryPage />} />
+        <Route path="/gallery/:gallerySlug" element={<GalleryPage />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin/login" element={<AdminLogin />} />
