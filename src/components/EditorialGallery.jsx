@@ -17,26 +17,15 @@ function EditorialGallery() {
   useEffect(() => {
     const loadPhotographs = async () => {
       setLoading(true)
+      setError('')
 
-      let { data, error: photosError } = await supabase
+      const { data, error: photosError } = await supabase
         .from('photos')
         .select('*')
         .eq('published', true)
         .eq('featured', true)
         .order('position')
         .limit(20)
-
-      if (!photosError && data?.length === 0) {
-        const fallback = await supabase
-          .from('photos')
-          .select('*')
-          .eq('published', true)
-          .order('position')
-          .limit(20)
-
-        data = fallback.data
-        photosError = fallback.error
-      }
 
       if (photosError) {
         setError(photosError.message)
@@ -59,7 +48,7 @@ function EditorialGallery() {
   if (loading) return <section className="public-status-page">Cargando portfolio…</section>
   if (error) return <section className="public-status-page">{error}</section>
   if (photographs.length === 0) {
-    return <section className="public-status-page">Todavía no hay fotografías publicadas.</section>
+    return <section className="public-status-page">Todavía no hay fotografías destacadas.</section>
   }
 
   return (
