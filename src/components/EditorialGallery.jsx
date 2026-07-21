@@ -1,23 +1,18 @@
 import { useEffect, useState } from 'react'
+import PhotoLightbox from './PhotoLightbox'
 import { supabase } from '../lib/supabase'
 
 const BUCKET = 'PORTFOLIO'
-const layouts = [
-  'wide', 'portrait', 'medium', 'small', 'portrait',
-  'medium', 'wide', 'small', 'portrait', 'medium',
-  'small', 'wide', 'portrait', 'medium', 'small',
-  'medium', 'portrait', 'wide', 'small', 'medium',
-]
 
 function EditorialGallery() {
   const [photographs, setPhotographs] = useState([])
+  const [activePhotoIndex, setActivePhotoIndex] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   useEffect(() => {
     const loadPhotographs = async () => {
       setLoading(true)
-      setError('')
 
       const { data, error: photosError } = await supabase
         .from('photos')
@@ -25,16 +20,15 @@ function EditorialGallery() {
         .eq('published', true)
         .eq('featured', true)
         .order('position')
-        .limit(20)
+        .limit(24)
 
       if (photosError) {
         setError(photosError.message)
       } else {
         setPhotographs(
-          (data || []).map((photo, index) => ({
+          (data || []).map((photo) => ({
             ...photo,
-            src: supabase.storage.from(BUCKET).getPublicUrl(photo.storage_path).data.publicUrl,
-            layout: layouts[index % layouts.length],
+            publicUrl: supabase.storage.from(BUCKET).getPublicUrl(photo.storage_path).data.publicUrl,
           })),
         )
       }
@@ -53,17 +47,30 @@ function EditorialGallery() {
 
   return (
     <section className="editorial-gallery" id="selected-work" aria-label="Selección fotográfica">
-      <div className="gallery-sequence">
+      <div className="photo-grid photo-grid--home">
         {photographs.map((photo, index) => (
-          <figure className={`gallery-item gallery-item--${photo.layout}`} key={photo.id}>
+          <button
+            className="photo-grid-item"
+            type="button"
+            key={photo.id}
+            onClick={() => setActivePhotoIndex(index)}
+            aria-label={`Abrir fotografía ${index + 1}`}
+          >
             <img
-              src={photo.src}
+              src={photo.publicUrl}
               alt={photo.alt_text || `Fotografía ${index + 1}`}
-              loading={index < 4 ? 'eager' : 'lazy'}
+              loading={index < 6 ? 'eager' : 'lazy'}
             />
-          </figure>
+          </button>
         ))}
       </div>
+
+      <PhotoLightbox
+        photos={photographs}
+        activeIndex={activePhotoIndex}
+        onClose={() => setActivePhotoIndex(null)}
+        onChange={setActivePhotoIndex}
+      />
     </section>
   )
 }
