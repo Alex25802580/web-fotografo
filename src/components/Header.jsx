@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom'
 
 const navigation = [
   { label: 'Home', to: '/' },
-  { label: 'Weddings', to: '/#selected-work' },
-  { label: 'Personal', to: '/#selected-work' },
+  { label: 'Weddings', to: '/weddings' },
+  { label: 'Personal', to: '/personal' },
   { label: 'About', to: '/about' },
   { label: 'Contact', to: '/contact' },
 ]
