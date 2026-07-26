@@ -7,8 +7,7 @@ function About() {
         <figure className="about-portrait">
           <img src={portrait} alt="Retrato de Diego Carrasco" />
         </figure>
-        <div>
-          <p className="page-kicker">About</p>
+        <div className="about-content">
           <h1 id="about-title">Lo extraordinario<br />vive en lo real.</h1>
           <div className="about-text">
             <p>
