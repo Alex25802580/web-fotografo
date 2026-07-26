@@ -28,7 +28,7 @@ function CategoryPage() {
         .single()
 
       if (categoryError) {
-        setError('No se ha encontrado esta categoría.')
+        setError('This category could not be found.')
         setLoading(false)
         return
       }
@@ -88,7 +88,7 @@ function CategoryPage() {
 
   if (loading) {
     return (
-      <main className="public-status-page public-status-page--loading" role="status" aria-label="Cargando fotografías">
+      <main className="public-status-page public-status-page--loading" role="status" aria-label="Loading photographs">
         <span className="loading-spinner" aria-hidden="true" />
       </main>
     )
@@ -98,20 +98,20 @@ function CategoryPage() {
   return (
     <main className="category-page category-page--photos-only">
       {photos.length === 0 ? (
-        <p className="empty-gallery-message">Todavía no hay fotografías publicadas.</p>
+        <p className="empty-gallery-message">There are no published photographs yet.</p>
       ) : (
-        <section className="photo-grid" aria-label={`Fotografías de ${categoryName}`}>
+        <section className="photo-grid" aria-label={`${categoryName} photographs`}>
           {photos.map((photo, index) => (
             <button
               className="photo-grid-item"
               type="button"
               key={photo.id}
               onClick={() => setActivePhotoIndex(index)}
-              aria-label={`Abrir fotografía ${index + 1}`}
+              aria-label={`Open photograph ${index + 1}`}
             >
               <img
                 src={photo.publicUrl}
-                alt={photo.alt_text || `Fotografía ${index + 1}`}
+                alt={photo.alt_text || `Photograph ${index + 1}`}
                 loading={index < 6 ? 'eager' : 'lazy'}
               />
             </button>
