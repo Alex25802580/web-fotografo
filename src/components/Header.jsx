@@ -26,7 +26,7 @@ function Header() {
         type="button"
         aria-expanded={isOpen}
         aria-controls="navigation"
-        aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
+        aria-label={isOpen ? 'Close menu' : 'Open menu'}
         onClick={() => setIsOpen((current) => !current)}
       >
         <span aria-hidden="true" />
