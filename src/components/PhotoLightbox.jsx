@@ -57,12 +57,12 @@ function PhotoLightbox({ photos, activeIndex, onClose, onChange }) {
       className="photo-lightbox"
       role="dialog"
       aria-modal="true"
-      aria-label="Fotografía ampliada"
+      aria-label="Enlarged photograph"
       onClick={onClose}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <button className="photo-lightbox-close" type="button" onClick={onClose} aria-label="Cerrar imagen">
+      <button className="photo-lightbox-close" type="button" onClick={onClose} aria-label="Close image">
         <span aria-hidden="true" />
         <span aria-hidden="true" />
       </button>
@@ -75,7 +75,7 @@ function PhotoLightbox({ photos, activeIndex, onClose, onChange }) {
             event.stopPropagation()
             onChange((activeIndex - 1 + photos.length) % photos.length)
           }}
-          aria-label="Fotografía anterior"
+          aria-label="Previous photograph"
         >
           <ChevronIcon direction="previous" />
         </button>
@@ -97,7 +97,7 @@ function PhotoLightbox({ photos, activeIndex, onClose, onChange }) {
             event.stopPropagation()
             onChange((activeIndex + 1) % photos.length)
           }}
-          aria-label="Fotografía siguiente"
+          aria-label="Next photograph"
         >
           <ChevronIcon direction="next" />
         </button>
