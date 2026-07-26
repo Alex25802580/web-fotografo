@@ -22,13 +22,16 @@ function Header() {
       <Link className="brand" to="/" onClick={() => setIsOpen(false)}>Diego Carrasco</Link>
 
       <button
-        className="menu-toggle"
+        className={isOpen ? 'menu-toggle is-open' : 'menu-toggle'}
         type="button"
         aria-expanded={isOpen}
         aria-controls="navigation"
+        aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
         onClick={() => setIsOpen((current) => !current)}
       >
-        {isOpen ? 'Close' : 'Menu'}
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
       </button>
 
       <nav id="navigation" className={isOpen ? 'navigation is-open' : 'navigation'} aria-label="Main navigation">
