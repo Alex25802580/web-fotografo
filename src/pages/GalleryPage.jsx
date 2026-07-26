@@ -58,7 +58,13 @@ function GalleryPage() {
     loadGallery()
   }, [gallerySlug])
 
-  if (loading) return <main className="public-status-page">Cargando…</main>
+  if (loading) {
+    return (
+      <main className="public-status-page public-status-page--loading" role="status" aria-label="Cargando fotografías">
+        <span className="loading-spinner" aria-hidden="true" />
+      </main>
+    )
+  }
   if (error) return <main className="public-status-page">{error}</main>
 
   return (
