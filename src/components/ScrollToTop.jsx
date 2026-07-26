@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom'
 function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false)
   const { pathname } = useLocation()
+  const hideButton = pathname === '/about' || pathname === '/contact'
 
   useEffect(() => {
     window.scrollTo({ top: 0 })
@@ -18,6 +19,8 @@ function ScrollToTop() {
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  if (hideButton) return null
 
   return (
     <button
