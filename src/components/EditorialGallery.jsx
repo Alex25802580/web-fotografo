@@ -41,18 +41,18 @@ function EditorialGallery() {
 
   if (loading) {
     return (
-      <section className="public-status-page public-status-page--loading" role="status" aria-label="Cargando fotografías">
+      <section className="public-status-page public-status-page--loading" role="status" aria-label="Loading photographs">
         <span className="loading-spinner" aria-hidden="true" />
       </section>
     )
   }
   if (error) return <section className="public-status-page">{error}</section>
   if (photographs.length === 0) {
-    return <section className="public-status-page">Todavía no hay fotografías destacadas.</section>
+    return <section className="public-status-page">There are no featured photographs yet.</section>
   }
 
   return (
-    <section className="editorial-gallery" id="selected-work" aria-label="Selección fotográfica">
+    <section className="editorial-gallery" id="selected-work" aria-label="Selected photographs">
       <div className="photo-grid photo-grid--home">
         {photographs.map((photo, index) => (
           <button
@@ -60,11 +60,11 @@ function EditorialGallery() {
             type="button"
             key={photo.id}
             onClick={() => setActivePhotoIndex(index)}
-            aria-label={`Abrir fotografía ${index + 1}`}
+            aria-label={`Open photograph ${index + 1}`}
           >
             <img
               src={photo.publicUrl}
-              alt={photo.alt_text || `Fotografía ${index + 1}`}
+              alt={photo.alt_text || `Photograph ${index + 1}`}
               loading={index < 6 ? 'eager' : 'lazy'}
             />
           </button>
