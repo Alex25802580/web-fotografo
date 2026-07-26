@@ -25,7 +25,7 @@ function Contact() {
 
       if (!response.ok) {
         const data = await response.json().catch(() => null)
-        const message = data?.errors?.map((item) => item.message).join(' ') || 'No se ha podido enviar el mensaje.'
+        const message = data?.errors?.map((item) => item.message).join(' ') || 'The message could not be sent.'
         throw new Error(message)
       }
 
@@ -33,17 +33,17 @@ function Contact() {
       setStatus('success')
     } catch (submitError) {
       setStatus('error')
-      setError(submitError.message || 'No se ha podido enviar el mensaje. Inténtalo de nuevo.')
+      setError(submitError.message || 'The message could not be sent. Please try again.')
     }
   }
 
   return (
     <section className="text-page contact-page" aria-labelledby="contact-title">
-      <form className="contact-form" onSubmit={handleSubmit} aria-label="Formulario de contacto">
-        <h1 id="contact-title">Contacto</h1>
+      <form className="contact-form" onSubmit={handleSubmit} aria-label="Contact form">
+        <h1 id="contact-title">Contact</h1>
 
         <label>
-          Nombre
+          Name
           <input type="text" name="name" autoComplete="name" required />
         </label>
 
@@ -53,24 +53,24 @@ function Contact() {
         </label>
 
         <label>
-          Teléfono
+          Phone
           <input type="tel" name="phone" autoComplete="tel" />
         </label>
 
         <label>
-          Mensaje
+          Message
           <textarea name="message" rows="6" required />
         </label>
 
-        <input type="hidden" name="_subject" value="Nueva consulta desde la web de Diego Carrasco" />
+        <input type="hidden" name="_subject" value="New enquiry from Diego Carrasco's website" />
 
         <button type="submit" disabled={status === 'sending'}>
-          {status === 'sending' ? 'Enviando…' : 'Enviar consulta'}
+          {status === 'sending' ? 'Sending…' : 'Send enquiry'}
         </button>
 
         {status === 'success' && (
           <p className="form-notice" role="status">
-            Mensaje enviado correctamente. Gracias por contactar.
+            Message sent successfully. Thank you for getting in touch.
           </p>
         )}
 
