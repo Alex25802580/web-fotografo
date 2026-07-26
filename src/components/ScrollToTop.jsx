@@ -26,7 +26,7 @@ function ScrollToTop() {
     <button
       className={isVisible ? 'scroll-top is-visible' : 'scroll-top'}
       type="button"
-      aria-label="Volver arriba"
+      aria-label="Back to top"
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
     >
       ↑
