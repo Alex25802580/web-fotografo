@@ -39,7 +39,13 @@ function EditorialGallery() {
     loadPhotographs()
   }, [])
 
-  if (loading) return <section className="public-status-page">Cargando portfolio…</section>
+  if (loading) {
+    return (
+      <section className="public-status-page public-status-page--loading" role="status" aria-label="Cargando fotografías">
+        <span className="loading-spinner" aria-hidden="true" />
+      </section>
+    )
+  }
   if (error) return <section className="public-status-page">{error}</section>
   if (photographs.length === 0) {
     return <section className="public-status-page">Todavía no hay fotografías destacadas.</section>
