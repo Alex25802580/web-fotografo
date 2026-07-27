@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import PhotoLightbox from '../components/PhotoLightbox'
-import { useLanguage } from '../context/LanguageContext'
+import { translations, useLanguage } from '../context/LanguageContext'
 import { supabase } from '../lib/supabase'
 
 const BUCKET = 'PORTFOLIO'
 
 function GalleryPage() {
   const { gallerySlug } = useParams()
-  const { t } = useLanguage()
+  const { language } = useLanguage()
+  const copy = translations[language].gallery
   const [gallery, setGallery] = useState(null)
   const [photos, setPhotos] = useState([])
   const [activePhotoIndex, setActivePhotoIndex] = useState(null)
@@ -62,17 +63,18 @@ function GalleryPage() {
 
   if (loading) {
     return (
-      <main className="public-status-page public-status-page--loading" role="status" aria-label={t.gallery.loading}>
+      <main className="public-status-page public-status-page--loading" role="status" aria-label={copy.loading}>
         <span className="loading-spinner" aria-hidden="true" />
       </main>
     )
   }
-  if (errorKey) return <main className="public-status-page">{t.gallery[errorKey]}</main>
+
+  if (errorKey) return <main className="public-status-page">{copy[errorKey]}</main>
 
   return (
     <main className="gallery-page gallery-page--photos-only">
       {photos.length === 0 ? (
-        <p className="empty-gallery-message">{t.gallery.emptyGallery}</p>
+        <p className="empty-gallery-message" key={language}>{copy.emptyGallery}</p>
       ) : (
         <section className="photo-grid" aria-label={gallery?.title}>
           {photos.map((photo, index) => (
@@ -81,7 +83,7 @@ function GalleryPage() {
               type="button"
               key={photo.id}
               onClick={() => setActivePhotoIndex(index)}
-              aria-label={`${t.gallery.openPhoto} ${index + 1}`}
+              aria-label={`${copy.openPhoto} ${index + 1}`}
             >
               <img
                 src={photo.publicUrl}
