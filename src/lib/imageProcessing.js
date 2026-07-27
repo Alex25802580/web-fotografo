@@ -1,5 +1,5 @@
-const MAX_IMAGE_SIZE = 2400
-const WEBP_QUALITY = 0.85
+const MAX_IMAGE_SIZE = 3400
+const WEBP_QUALITY = 0.92
 
 const loadImage = (file) =>
   new Promise((resolve, reject) => {
@@ -33,7 +33,14 @@ const canvasToBlob = (canvas) =>
 
 export const optimizeImage = async (file) => {
   const image = await loadImage(file)
-  const scale = Math.min(1, MAX_IMAGE_SIZE / Math.max(image.naturalWidth, image.naturalHeight))
+  const longestSide = Math.max(image.naturalWidth, image.naturalHeight)
+
+  // Si ya es un WebP dentro del tamaño máximo, evitamos recomprimirlo.
+  if (file.type === 'image/webp' && longestSide <= MAX_IMAGE_SIZE) {
+    return file
+  }
+
+  const scale = Math.min(1, MAX_IMAGE_SIZE / longestSide)
   const width = Math.max(1, Math.round(image.naturalWidth * scale))
   const height = Math.max(1, Math.round(image.naturalHeight * scale))
   const canvas = document.createElement('canvas')
@@ -43,6 +50,8 @@ export const optimizeImage = async (file) => {
 
   canvas.width = width
   canvas.height = height
+  context.imageSmoothingEnabled = true
+  context.imageSmoothingQuality = 'high'
   context.drawImage(image, 0, 0, width, height)
 
   const blob = await canvasToBlob(canvas)
