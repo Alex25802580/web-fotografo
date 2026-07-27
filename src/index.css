@@ -33,12 +33,15 @@ img { display: block; max-width: 100%; }
 }
 
 .brand {
+  display: flex;
   flex: 0 0 auto;
-  font-size: clamp(.9rem, 1vw, 1rem);
-  font-weight: 400;
-  letter-spacing: .08em;
+  align-items: center;
   line-height: 1;
-  text-transform: uppercase;
+}
+
+.brand-logo {
+  width: clamp(10.75rem, 15vw, 14rem);
+  height: auto;
 }
 
 .navigation {
@@ -187,7 +190,7 @@ img { display: block; max-width: 100%; }
 
 @media (max-width: 800px) {
   .site-header { min-height: 4.5rem; justify-content: space-between; gap: 1rem; padding: 0 var(--page-padding); }
-  .brand { font-size: .9rem; }
+  .brand-logo { width: 9.75rem; }
   .menu-toggle { position: relative; z-index: 22; display: flex; flex: 0 0 auto; cursor: pointer; }
   .navigation { position: fixed; inset: 0; z-index: 21; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 1.4rem; margin-left: 0; padding: var(--page-padding); background: #fff; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
   .navigation.is-open { opacity: 1; pointer-events: auto; }
