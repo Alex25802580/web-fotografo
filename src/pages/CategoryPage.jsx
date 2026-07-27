@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
-import PhotoLightbox from '../components/PhotoLightbox'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { translations, useLanguage } from '../context/LanguageContext'
 import { supabase } from '../lib/supabase'
 
@@ -13,8 +12,7 @@ function CategoryPage() {
   const copy = translations[language].gallery
   const categorySlug = routeSlug || location.pathname.replace(/^\//, '')
   const [categoryName, setCategoryName] = useState('')
-  const [photos, setPhotos] = useState([])
-  const [activePhotoIndex, setActivePhotoIndex] = useState(null)
+  const [galleries, setGalleries] = useState([])
   const [loading, setLoading] = useState(true)
   const [errorKey, setErrorKey] = useState('')
 
@@ -22,7 +20,6 @@ function CategoryPage() {
     const loadCategory = async () => {
       setLoading(true)
       setErrorKey('')
-      setActivePhotoIndex(null)
 
       const { data: categoryData, error: categoryError } = await supabase
         .from('categories')
@@ -38,7 +35,7 @@ function CategoryPage() {
 
       const { data: galleryData, error: galleriesError } = await supabase
         .from('galleries')
-        .select('id, position')
+        .select('*')
         .eq('category_id', categoryData.id)
         .eq('published', true)
         .order('position')
@@ -55,7 +52,7 @@ function CategoryPage() {
       if (galleryIds.length > 0) {
         const { data, error: photosError } = await supabase
           .from('photos')
-          .select('*')
+          .select('id, gallery_id, storage_path, alt_text, position, published')
           .in('gallery_id', galleryIds)
           .eq('published', true)
           .order('position')
@@ -66,23 +63,32 @@ function CategoryPage() {
           return
         }
 
-        const galleryOrder = Object.fromEntries(
-          (galleryData || []).map((gallery, index) => [gallery.id, index]),
-        )
-
-        photoData = (data || []).sort((first, second) => {
-          const galleryDifference = galleryOrder[first.gallery_id] - galleryOrder[second.gallery_id]
-          return galleryDifference || first.position - second.position
-        })
+        photoData = data || []
       }
 
+      const photosByGallery = photoData.reduce((accumulator, photo) => {
+        if (!accumulator[photo.gallery_id]) accumulator[photo.gallery_id] = []
+        accumulator[photo.gallery_id].push(photo)
+        return accumulator
+      }, {})
+
+      const preparedGalleries = (galleryData || []).map((gallery) => {
+        const galleryPhotos = photosByGallery[gallery.id] || []
+        const coverPhoto = galleryPhotos.find((photo) => photo.id === gallery.cover_photo_id) || galleryPhotos[0] || null
+
+        return {
+          ...gallery,
+          coverPhoto: coverPhoto
+            ? {
+                ...coverPhoto,
+                publicUrl: supabase.storage.from(BUCKET).getPublicUrl(coverPhoto.storage_path).data.publicUrl,
+              }
+            : null,
+        }
+      })
+
       setCategoryName(categoryData.name)
-      setPhotos(
-        photoData.map((photo) => ({
-          ...photo,
-          publicUrl: supabase.storage.from(BUCKET).getPublicUrl(photo.storage_path).data.publicUrl,
-        })),
-      )
+      setGalleries(preparedGalleries)
       setLoading(false)
     }
 
@@ -100,35 +106,29 @@ function CategoryPage() {
   if (errorKey) return <main className="public-status-page">{copy[errorKey]}</main>
 
   return (
-    <main className="category-page category-page--photos-only">
-      {photos.length === 0 ? (
+    <main className="category-page category-page--galleries">
+      {galleries.length === 0 ? (
         <p className="empty-gallery-message" key={language}>{copy.emptyCategory}</p>
       ) : (
-        <section className="photo-grid" aria-label={`${categoryName} ${copy.photosLabel}`}>
-          {photos.map((photo, index) => (
-            <button
-              className="photo-grid-item"
-              type="button"
-              key={photo.id}
-              onClick={() => setActivePhotoIndex(index)}
-              aria-label={`${copy.openPhoto} ${index + 1}`}
-            >
-              <img
-                src={photo.publicUrl}
-                alt={photo.alt_text || `${copy.photo} ${index + 1}`}
-                loading={index < 6 ? 'eager' : 'lazy'}
-              />
-            </button>
+        <section className="gallery-card-grid" aria-label={`${categoryName} ${copy.galleriesLabel}`}>
+          {galleries.map((gallery) => (
+            <Link className="gallery-card" to={`/gallery/${gallery.slug}`} key={gallery.id}>
+              <div className="gallery-card-image">
+                {gallery.coverPhoto ? (
+                  <img
+                    src={gallery.coverPhoto.publicUrl}
+                    alt={gallery.coverPhoto.alt_text || gallery.title}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="gallery-card-placeholder" aria-hidden="true" />
+                )}
+              </div>
+              <h2>{gallery.title}</h2>
+            </Link>
           ))}
         </section>
       )}
-
-      <PhotoLightbox
-        photos={photos}
-        activeIndex={activePhotoIndex}
-        onClose={() => setActivePhotoIndex(null)}
-        onChange={setActivePhotoIndex}
-      />
     </main>
   )
 }
