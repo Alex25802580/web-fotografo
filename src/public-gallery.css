@@ -51,8 +51,8 @@
   display: grid;
   place-items: center;
   padding: .85rem clamp(4rem, 6vw, 6rem) 2.4rem;
-  background: rgba(8, 8, 8, .985);
-  color: #fff;
+  background: rgba(255, 255, 255, .985);
+  color: #111;
   animation: lightbox-fade .2s ease both;
 }
 
@@ -71,7 +71,7 @@
   height: auto;
   max-height: calc(100svh - 3.25rem);
   object-fit: contain;
-  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, .28);
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, .12);
   animation: lightbox-image-in .24s ease both;
 }
 
@@ -83,7 +83,7 @@
   place-items: center;
   border: 0;
   background: transparent;
-  color: #fff;
+  color: #111;
   cursor: pointer;
 }
 
@@ -108,7 +108,7 @@
 
 .photo-lightbox-close:hover,
 .photo-lightbox-close:focus-visible {
-  background: rgba(255, 255, 255, .12);
+  background: rgba(0, 0, 0, .06);
   transform: rotate(4deg);
 }
 
@@ -116,9 +116,9 @@
   top: 50%;
   width: clamp(2.8rem, 3.5vw, 3.35rem);
   height: clamp(2.8rem, 3.5vw, 3.35rem);
-  border: 1px solid rgba(255, 255, 255, .28);
+  border: 1px solid rgba(17, 17, 17, .25);
   border-radius: 50%;
-  background: rgba(255, 255, 255, .04);
+  background: rgba(255, 255, 255, .78);
   backdrop-filter: blur(8px);
   transform: translateY(-50%);
   transition: background .2s ease, border-color .2s ease, transform .2s ease;
@@ -136,8 +136,8 @@
 
 .photo-lightbox-arrow:hover,
 .photo-lightbox-arrow:focus-visible {
-  border-color: rgba(255, 255, 255, .68);
-  background: rgba(255, 255, 255, .11);
+  border-color: rgba(17, 17, 17, .55);
+  background: rgba(0, 0, 0, .05);
 }
 
 .photo-lightbox-arrow--previous {
@@ -166,7 +166,7 @@
   gap: .55rem;
   align-items: center;
   margin: 0;
-  color: rgba(255, 255, 255, .68);
+  color: rgba(17, 17, 17, .72);
   font-size: .62rem;
   letter-spacing: .14em;
   transform: translateX(-50%);
