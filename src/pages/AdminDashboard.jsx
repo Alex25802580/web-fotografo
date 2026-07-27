@@ -31,9 +31,14 @@ function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [savingGallery, setSavingGallery] = useState(false)
   const [savingCoverId, setSavingCoverId] = useState(null)
+  const [editingGalleryId, setEditingGalleryId] = useState(null)
+  const [editingGalleryTitle, setEditingGalleryTitle] = useState('')
+  const [savingGalleryName, setSavingGalleryName] = useState(false)
+  const [deletingGalleryId, setDeletingGalleryId] = useState(null)
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState('')
   const [fileInputKey, setFileInputKey] = useState(0)
+
   const [galleryForm, setGalleryForm] = useState({
     title: '',
     slug: '',
@@ -41,6 +46,7 @@ function AdminDashboard() {
     position: 0,
     published: true,
   })
+
   const [photoForm, setPhotoForm] = useState({
     galleryId: '',
     altText: '',
@@ -128,24 +134,96 @@ function AdminDashboard() {
     await loadData()
   }
 
-  const handleDeleteGallery = async (gallery) => {
-    if (!window.confirm(`¿Eliminar la galería “${gallery.title}”?`)) return
+  const startEditingGallery = (gallery) => {
+    setEditingGalleryId(gallery.id)
+    setEditingGalleryTitle(gallery.title)
+    setError('')
+  }
 
-    const { error: deleteError } = await supabase
+  const cancelEditingGallery = () => {
+    setEditingGalleryId(null)
+    setEditingGalleryTitle('')
+  }
+
+  const handleRenameGallery = async (gallery) => {
+    const title = editingGalleryTitle.trim()
+
+    if (!title) {
+      setError('El nombre de la galería es obligatorio.')
+      return
+    }
+
+    if (title === gallery.title) {
+      cancelEditingGallery()
+      return
+    }
+
+    setSavingGalleryName(true)
+    setError('')
+
+    const { error: updateError } = await supabase
+      .from('galleries')
+      .update({ title })
+      .eq('id', gallery.id)
+
+    setSavingGalleryName(false)
+
+    if (updateError) {
+      setError(updateError.message)
+      return
+    }
+
+    cancelEditingGallery()
+    showSuccess(`Galería renombrada a “${title}”.`)
+    await loadData()
+  }
+
+  const handleDeleteGallery = async (gallery) => {
+    if (!window.confirm(`¿Estás seguro de eliminar la galería “${gallery.title}”? Se eliminarán también todas sus fotografías.`)) return
+
+    setDeletingGalleryId(gallery.id)
+    setError('')
+
+    const galleryPhotos = photos.filter((photo) => photo.gallery_id === gallery.id)
+    const storagePaths = galleryPhotos.map((photo) => photo.storage_path).filter(Boolean)
+
+    if (storagePaths.length > 0) {
+      const { error: storageError } = await supabase.storage.from(BUCKET).remove(storagePaths)
+
+      if (storageError) {
+        setDeletingGalleryId(null)
+        setError(storageError.message)
+        return
+      }
+    }
+
+    if (galleryPhotos.length > 0) {
+      const { error: photosDeleteError } = await supabase
+        .from('photos')
+        .delete()
+        .eq('gallery_id', gallery.id)
+
+      if (photosDeleteError) {
+        setDeletingGalleryId(null)
+        setError(photosDeleteError.message)
+        return
+      }
+    }
+
+    const { error: galleryDeleteError } = await supabase
       .from('galleries')
       .delete()
       .eq('id', gallery.id)
 
-    if (deleteError) {
-      setError(
-        deleteError.message.includes('foreign key')
-          ? 'No puedes borrar una galería que todavía contiene fotografías.'
-          : deleteError.message,
-      )
+    setDeletingGalleryId(null)
+
+    if (galleryDeleteError) {
+      setError(galleryDeleteError.message)
       return
     }
 
-    showSuccess('Galería eliminada.')
+    if (editingGalleryId === gallery.id) cancelEditingGallery()
+    showSuccess('Galería y fotografías eliminadas.')
     await loadData()
   }
 
@@ -173,8 +251,7 @@ function AdminDashboard() {
   }
 
   const handleFilesChange = (event) => {
-    const files = Array.from(event.target.files || [])
-    setPhotoForm((current) => ({ ...current, files }))
+    setPhotoForm((current) => ({ ...current, files: Array.from(event.target.files || []) }))
   }
 
   const removeSelectedFile = (indexToRemove) => {
@@ -278,20 +355,13 @@ function AdminDashboard() {
       }
     }
 
-    const { error: storageError } = await supabase.storage
-      .from(BUCKET)
-      .remove([photo.storage_path])
-
+    const { error: storageError } = await supabase.storage.from(BUCKET).remove([photo.storage_path])
     if (storageError) {
       setError(storageError.message)
       return
     }
 
-    const { error: deleteError } = await supabase
-      .from('photos')
-      .delete()
-      .eq('id', photo.id)
-
+    const { error: deleteError } = await supabase.from('photos').delete().eq('id', photo.id)
     if (deleteError) {
       setError(deleteError.message)
       return
@@ -313,9 +383,7 @@ function AdminDashboard() {
           <p className="admin-eyebrow">Diego Carrasco</p>
           <h1>Administración</h1>
         </div>
-        <button type="button" className="admin-secondary-button" onClick={handleLogout}>
-          Cerrar sesión
-        </button>
+        <button type="button" className="admin-secondary-button" onClick={handleLogout}>Cerrar sesión</button>
       </header>
 
       {notice && <p className="admin-message admin-message--success">{notice}</p>}
@@ -327,47 +395,24 @@ function AdminDashboard() {
           <form className="admin-form" onSubmit={handleCreateGallery}>
             <label>
               Nombre de la galería
-              <input
-                value={galleryForm.title}
-                onChange={(event) => setGalleryForm({ ...galleryForm, title: event.target.value })}
-                required
-              />
+              <input value={galleryForm.title} onChange={(event) => setGalleryForm({ ...galleryForm, title: event.target.value })} required />
             </label>
             <label>
               Slug
-              <input
-                value={galleryForm.slug}
-                onChange={(event) => setGalleryForm({ ...galleryForm, slug: event.target.value })}
-                placeholder="Se genera automáticamente"
-              />
+              <input value={galleryForm.slug} onChange={(event) => setGalleryForm({ ...galleryForm, slug: event.target.value })} placeholder="Se genera automáticamente" />
             </label>
             <label>
               Categoría
-              <select
-                value={galleryForm.categoryId}
-                onChange={(event) => setGalleryForm({ ...galleryForm, categoryId: event.target.value })}
-                required
-              >
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>{category.name}</option>
-                ))}
+              <select value={galleryForm.categoryId} onChange={(event) => setGalleryForm({ ...galleryForm, categoryId: event.target.value })} required>
+                {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
               </select>
             </label>
             <label>
               Posición
-              <input
-                type="number"
-                min="0"
-                value={galleryForm.position}
-                onChange={(event) => setGalleryForm({ ...galleryForm, position: event.target.value })}
-              />
+              <input type="number" min="0" value={galleryForm.position} onChange={(event) => setGalleryForm({ ...galleryForm, position: event.target.value })} />
             </label>
             <label className="admin-check">
-              <input
-                type="checkbox"
-                checked={galleryForm.published}
-                onChange={(event) => setGalleryForm({ ...galleryForm, published: event.target.checked })}
-              />
+              <input type="checkbox" checked={galleryForm.published} onChange={(event) => setGalleryForm({ ...galleryForm, published: event.target.checked })} />
               Publicada
             </label>
             <button disabled={savingGallery}>{savingGallery ? 'Guardando…' : 'Crear galería'}</button>
@@ -379,34 +424,16 @@ function AdminDashboard() {
           <form className="admin-form" onSubmit={handleUploadPhotos}>
             <label>
               Galería
-              <select
-                value={photoForm.galleryId}
-                onChange={(event) => setPhotoForm({ ...photoForm, galleryId: event.target.value })}
-                disabled={galleries.length === 0}
-                required
-              >
-                <option value="">
-                  {galleries.length ? 'Selecciona una galería' : 'Primero crea una galería'}
-                </option>
-                {galleries.map((gallery) => (
-                  <option key={gallery.id} value={gallery.id}>{gallery.title}</option>
-                ))}
+              <select value={photoForm.galleryId} onChange={(event) => setPhotoForm({ ...photoForm, galleryId: event.target.value })} disabled={galleries.length === 0} required>
+                <option value="">{galleries.length ? 'Selecciona una galería' : 'Primero crea una galería'}</option>
+                {galleries.map((gallery) => <option key={gallery.id} value={gallery.id}>{gallery.title}</option>)}
               </select>
             </label>
             <label>
               Imágenes
-              <input
-                key={fileInputKey}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                multiple
-                onChange={handleFilesChange}
-                required
-              />
+              <input key={fileInputKey} type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={handleFilesChange} required />
             </label>
-            <p className="admin-help">
-              Puedes seleccionar muchas fotos a la vez. Se redimensionan a un máximo de 2400 px y se convierten a WebP antes de subirlas.
-            </p>
+            <p className="admin-help">Puedes seleccionar muchas fotos a la vez. Se redimensionan a un máximo de 2400 px y se convierten a WebP antes de subirlas.</p>
             {photoForm.files.length > 0 && (
               <div className="admin-selected-files">
                 {photoForm.files.map((file, index) => (
@@ -419,35 +446,18 @@ function AdminDashboard() {
             )}
             <label>
               Texto alternativo común (opcional)
-              <input
-                value={photoForm.altText}
-                onChange={(event) => setPhotoForm({ ...photoForm, altText: event.target.value })}
-                placeholder="Si se deja vacío se usa el nombre del archivo"
-              />
+              <input value={photoForm.altText} onChange={(event) => setPhotoForm({ ...photoForm, altText: event.target.value })} placeholder="Si se deja vacío se usa el nombre del archivo" />
             </label>
             <label>
               Posición inicial
-              <input
-                type="number"
-                min="0"
-                value={photoForm.position}
-                onChange={(event) => setPhotoForm({ ...photoForm, position: event.target.value })}
-              />
+              <input type="number" min="0" value={photoForm.position} onChange={(event) => setPhotoForm({ ...photoForm, position: event.target.value })} />
             </label>
             <label className="admin-check">
-              <input
-                type="checkbox"
-                checked={photoForm.featured}
-                onChange={(event) => setPhotoForm({ ...photoForm, featured: event.target.checked })}
-              />
+              <input type="checkbox" checked={photoForm.featured} onChange={(event) => setPhotoForm({ ...photoForm, featured: event.target.checked })} />
               Destacadas en portada
             </label>
             <label className="admin-check">
-              <input
-                type="checkbox"
-                checked={photoForm.published}
-                onChange={(event) => setPhotoForm({ ...photoForm, published: event.target.checked })}
-              />
+              <input type="checkbox" checked={photoForm.published} onChange={(event) => setPhotoForm({ ...photoForm, published: event.target.checked })} />
               Publicadas
             </label>
             {uploadProgress && <p className="admin-upload-progress">{uploadProgress}</p>}
@@ -465,15 +475,49 @@ function AdminDashboard() {
             <table className="admin-table">
               <thead><tr><th>Nombre</th><th>Categoría</th><th>Portada</th><th>Estado</th><th></th></tr></thead>
               <tbody>
-                {galleries.map((gallery) => (
-                  <tr key={gallery.id}>
-                    <td>{gallery.title}</td>
-                    <td>{gallery.categories?.name || '—'}</td>
-                    <td>{gallery.cover_photo_id ? 'Elegida' : 'Primera foto'}</td>
-                    <td>{gallery.published ? 'Publicada' : 'Oculta'}</td>
-                    <td><button type="button" className="admin-link-button" onClick={() => handleDeleteGallery(gallery)}>Eliminar</button></td>
-                  </tr>
-                ))}
+                {galleries.map((gallery) => {
+                  const isEditing = editingGalleryId === gallery.id
+                  const isDeleting = deletingGalleryId === gallery.id
+
+                  return (
+                    <tr key={gallery.id}>
+                      <td>
+                        {isEditing ? (
+                          <input
+                            className="admin-inline-name-input"
+                            value={editingGalleryTitle}
+                            onChange={(event) => setEditingGalleryTitle(event.target.value)}
+                            onKeyDown={(event) => {
+                              if (event.key === 'Enter') handleRenameGallery(gallery)
+                              if (event.key === 'Escape') cancelEditingGallery()
+                            }}
+                            autoFocus
+                          />
+                        ) : gallery.title}
+                      </td>
+                      <td>{gallery.categories?.name || '—'}</td>
+                      <td>{gallery.cover_photo_id ? 'Elegida' : 'Primera foto'}</td>
+                      <td>{gallery.published ? 'Publicada' : 'Oculta'}</td>
+                      <td>
+                        <div className="admin-photo-actions">
+                          {isEditing ? (
+                            <>
+                              <button type="button" className="admin-link-button" disabled={savingGalleryName} onClick={() => handleRenameGallery(gallery)}>
+                                {savingGalleryName ? 'Guardando…' : 'Guardar'}
+                              </button>
+                              <button type="button" className="admin-link-button" disabled={savingGalleryName} onClick={cancelEditingGallery}>Cancelar</button>
+                            </>
+                          ) : (
+                            <button type="button" className="admin-link-button" onClick={() => startEditingGallery(gallery)}>Editar</button>
+                          )}
+                          <button type="button" className="admin-link-button" disabled={isDeleting} onClick={() => handleDeleteGallery(gallery)}>
+                            {isDeleting ? 'Eliminando…' : 'Eliminar'}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
@@ -495,19 +539,10 @@ function AdminDashboard() {
                   <img src={data.publicUrl} alt={photo.alt_text || ''} />
                   <div>
                     <strong>{gallery?.title || 'Galería'}</strong>
-                    <p>
-                      {isCover ? 'Portada de galería · ' : ''}
-                      {photo.featured ? 'Destacada en Home · ' : ''}
-                      {photo.published ? 'Publicada' : 'Oculta'}
-                    </p>
+                    <p>{isCover ? 'Portada de galería · ' : ''}{photo.featured ? 'Destacada en Home · ' : ''}{photo.published ? 'Publicada' : 'Oculta'}</p>
                   </div>
                   <div className="admin-photo-actions">
-                    <button
-                      type="button"
-                      className="admin-link-button"
-                      disabled={isCover || savingCoverId === photo.id}
-                      onClick={() => handleSetGalleryCover(photo)}
-                    >
+                    <button type="button" className="admin-link-button" disabled={isCover || savingCoverId === photo.id} onClick={() => handleSetGalleryCover(photo)}>
                       {isCover ? 'Portada actual' : savingCoverId === photo.id ? 'Guardando…' : 'Usar como portada'}
                     </button>
                     <button type="button" className="admin-link-button" onClick={() => handleDeletePhoto(photo)}>Eliminar</button>
