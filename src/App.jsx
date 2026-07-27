@@ -3,7 +3,6 @@ import Header from './components/Header'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
 import ProtectedAdminRoute from './components/ProtectedAdminRoute'
-import GalleryNameEditor from './components/GalleryNameEditor'
 import { LanguageProvider } from './context/LanguageContext'
 import Overview from './pages/Overview'
 import About from './pages/About'
@@ -12,6 +11,7 @@ import CategoryPage from './pages/CategoryPage'
 import GalleryPage from './pages/GalleryPage'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
+import AdminHomePhotos from './pages/AdminHomePhotos'
 import './admin.css'
 import './admin-upload.css'
 import './admin-home.css'
@@ -21,7 +21,9 @@ function AdminPage() {
   return (
     <>
       <AdminDashboard />
-      <GalleryNameEditor />
+      <div className="admin-dashboard admin-home-photos-section">
+        <AdminHomePhotos />
+      </div>
     </>
   )
 }
