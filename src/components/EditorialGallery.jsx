@@ -15,10 +15,9 @@ function EditorialGallery() {
       setLoading(true)
 
       const { data, error: photosError } = await supabase
-        .from('photos')
+        .from('home_photos')
         .select('*')
         .eq('published', true)
-        .eq('featured', true)
         .order('position')
         .limit(24)
 
