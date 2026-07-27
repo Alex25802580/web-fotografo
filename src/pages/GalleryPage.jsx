@@ -1,22 +1,24 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import PhotoLightbox from '../components/PhotoLightbox'
+import { useLanguage } from '../context/LanguageContext'
 import { supabase } from '../lib/supabase'
 
 const BUCKET = 'PORTFOLIO'
 
 function GalleryPage() {
   const { gallerySlug } = useParams()
+  const { t } = useLanguage()
   const [gallery, setGallery] = useState(null)
   const [photos, setPhotos] = useState([])
   const [activePhotoIndex, setActivePhotoIndex] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const [errorKey, setErrorKey] = useState('')
 
   useEffect(() => {
     const loadGallery = async () => {
       setLoading(true)
-      setError('')
+      setErrorKey('')
       setActivePhotoIndex(null)
 
       const { data: galleryData, error: galleryError } = await supabase
@@ -27,7 +29,7 @@ function GalleryPage() {
         .single()
 
       if (galleryError) {
-        setError('This gallery could not be found.')
+        setErrorKey('galleryNotFound')
         setLoading(false)
         return
       }
@@ -40,7 +42,7 @@ function GalleryPage() {
         .order('position')
 
       if (photosError) {
-        setError(photosError.message)
+        setErrorKey('galleryNotFound')
         setLoading(false)
         return
       }
@@ -60,17 +62,17 @@ function GalleryPage() {
 
   if (loading) {
     return (
-      <main className="public-status-page public-status-page--loading" role="status" aria-label="Loading photographs">
+      <main className="public-status-page public-status-page--loading" role="status" aria-label={t.gallery.loading}>
         <span className="loading-spinner" aria-hidden="true" />
       </main>
     )
   }
-  if (error) return <main className="public-status-page">{error}</main>
+  if (errorKey) return <main className="public-status-page">{t.gallery[errorKey]}</main>
 
   return (
     <main className="gallery-page gallery-page--photos-only">
       {photos.length === 0 ? (
-        <p className="empty-gallery-message">This gallery does not have any published photographs yet.</p>
+        <p className="empty-gallery-message">{t.gallery.emptyGallery}</p>
       ) : (
         <section className="photo-grid" aria-label={gallery?.title}>
           {photos.map((photo, index) => (
@@ -79,7 +81,7 @@ function GalleryPage() {
               type="button"
               key={photo.id}
               onClick={() => setActivePhotoIndex(index)}
-              aria-label={`Open photograph ${index + 1}`}
+              aria-label={`${t.gallery.openPhoto} ${index + 1}`}
             >
               <img
                 src={photo.publicUrl}
