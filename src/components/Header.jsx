@@ -26,7 +26,9 @@ function Header() {
 
   return (
     <header className="site-header">
-      <Link className="brand" to="/">Diego Carrasco</Link>
+      <Link className="brand" to="/" aria-label="Vladimir Studios home">
+        <img className="brand-logo" src="/vladimir-studios-logo.svg" alt="Vladimir Studios" />
+      </Link>
 
       <button
         className={isOpen ? 'menu-toggle is-open' : 'menu-toggle'}
