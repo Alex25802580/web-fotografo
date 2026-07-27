@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import PhotoLightbox from '../components/PhotoLightbox'
-import { useLanguage } from '../context/LanguageContext'
+import { translations, useLanguage } from '../context/LanguageContext'
 import { supabase } from '../lib/supabase'
 
 const BUCKET = 'PORTFOLIO'
@@ -9,7 +9,8 @@ const BUCKET = 'PORTFOLIO'
 function CategoryPage() {
   const { categorySlug: routeSlug } = useParams()
   const location = useLocation()
-  const { t } = useLanguage()
+  const { language } = useLanguage()
+  const copy = translations[language].gallery
   const categorySlug = routeSlug || location.pathname.replace(/^\//, '')
   const [categoryName, setCategoryName] = useState('')
   const [photos, setPhotos] = useState([])
@@ -90,30 +91,31 @@ function CategoryPage() {
 
   if (loading) {
     return (
-      <main className="public-status-page public-status-page--loading" role="status" aria-label={t.gallery.loading}>
+      <main className="public-status-page public-status-page--loading" role="status" aria-label={copy.loading}>
         <span className="loading-spinner" aria-hidden="true" />
       </main>
     )
   }
-  if (errorKey) return <main className="public-status-page">{t.gallery[errorKey]}</main>
+
+  if (errorKey) return <main className="public-status-page">{copy[errorKey]}</main>
 
   return (
     <main className="category-page category-page--photos-only">
       {photos.length === 0 ? (
-        <p className="empty-gallery-message">{t.gallery.emptyCategory}</p>
+        <p className="empty-gallery-message" key={language}>{copy.emptyCategory}</p>
       ) : (
-        <section className="photo-grid" aria-label={`${categoryName} ${t.gallery.photosLabel}`}>
+        <section className="photo-grid" aria-label={`${categoryName} ${copy.photosLabel}`}>
           {photos.map((photo, index) => (
             <button
               className="photo-grid-item"
               type="button"
               key={photo.id}
               onClick={() => setActivePhotoIndex(index)}
-              aria-label={`${t.gallery.openPhoto} ${index + 1}`}
+              aria-label={`${copy.openPhoto} ${index + 1}`}
             >
               <img
                 src={photo.publicUrl}
-                alt={photo.alt_text || `${t.gallery.photo} ${index + 1}`}
+                alt={photo.alt_text || `${copy.photo} ${index + 1}`}
                 loading={index < 6 ? 'eager' : 'lazy'}
               />
             </button>
