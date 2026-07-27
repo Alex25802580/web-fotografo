@@ -30,6 +30,7 @@ function AdminDashboard() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
   const [savingGallery, setSavingGallery] = useState(false)
+  const [savingCoverId, setSavingCoverId] = useState(null)
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState('')
   const [fileInputKey, setFileInputKey] = useState(0)
@@ -97,13 +98,20 @@ function AdminDashboard() {
 
   const handleCreateGallery = async (event) => {
     event.preventDefault()
+    const title = galleryForm.title.trim()
+
+    if (!title) {
+      setError('El nombre de la galería es obligatorio.')
+      return
+    }
+
     setSavingGallery(true)
     setError('')
 
     const { error: insertError } = await supabase.from('galleries').insert({
       category_id: Number(galleryForm.categoryId),
-      title: galleryForm.title.trim(),
-      slug: galleryForm.slug || createSlug(galleryForm.title),
+      title,
+      slug: galleryForm.slug.trim() || createSlug(title),
       position: Number(galleryForm.position),
       published: galleryForm.published,
     })
@@ -138,6 +146,29 @@ function AdminDashboard() {
     }
 
     showSuccess('Galería eliminada.')
+    await loadData()
+  }
+
+  const handleSetGalleryCover = async (photo) => {
+    const gallery = galleryById[photo.gallery_id]
+    if (!gallery) return
+
+    setSavingCoverId(photo.id)
+    setError('')
+
+    const { error: updateError } = await supabase
+      .from('galleries')
+      .update({ cover_photo_id: photo.id })
+      .eq('id', gallery.id)
+
+    setSavingCoverId(null)
+
+    if (updateError) {
+      setError(updateError.message)
+      return
+    }
+
+    showSuccess(`Portada de “${gallery.title}” actualizada.`)
     await loadData()
   }
 
@@ -234,6 +265,19 @@ function AdminDashboard() {
   const handleDeletePhoto = async (photo) => {
     if (!window.confirm('¿Eliminar esta fotografía?')) return
 
+    const gallery = galleryById[photo.gallery_id]
+    if (gallery?.cover_photo_id === photo.id) {
+      const { error: clearCoverError } = await supabase
+        .from('galleries')
+        .update({ cover_photo_id: null })
+        .eq('id', gallery.id)
+
+      if (clearCoverError) {
+        setError(clearCoverError.message)
+        return
+      }
+    }
+
     const { error: storageError } = await supabase.storage
       .from(BUCKET)
       .remove([photo.storage_path])
@@ -282,7 +326,7 @@ function AdminDashboard() {
           <h2>Nueva galería</h2>
           <form className="admin-form" onSubmit={handleCreateGallery}>
             <label>
-              Título
+              Nombre de la galería
               <input
                 value={galleryForm.title}
                 onChange={(event) => setGalleryForm({ ...galleryForm, title: event.target.value })}
@@ -419,12 +463,13 @@ function AdminDashboard() {
         {loading ? <p>Cargando…</p> : galleries.length === 0 ? <p>No hay galerías todavía.</p> : (
           <div className="admin-table-wrap">
             <table className="admin-table">
-              <thead><tr><th>Título</th><th>Categoría</th><th>Estado</th><th></th></tr></thead>
+              <thead><tr><th>Nombre</th><th>Categoría</th><th>Portada</th><th>Estado</th><th></th></tr></thead>
               <tbody>
                 {galleries.map((gallery) => (
                   <tr key={gallery.id}>
                     <td>{gallery.title}</td>
                     <td>{gallery.categories?.name || '—'}</td>
+                    <td>{gallery.cover_photo_id ? 'Elegida' : 'Primera foto'}</td>
                     <td>{gallery.published ? 'Publicada' : 'Oculta'}</td>
                     <td><button type="button" className="admin-link-button" onClick={() => handleDeleteGallery(gallery)}>Eliminar</button></td>
                   </tr>
@@ -437,18 +482,36 @@ function AdminDashboard() {
 
       <section className="admin-card admin-list-card">
         <h2>Fotografías ({photos.length})</h2>
+        <p className="admin-help">Para escoger la portada de una galería, pulsa “Usar como portada” en una de sus fotografías.</p>
         {loading ? <p>Cargando…</p> : photos.length === 0 ? <p>No hay fotografías todavía.</p> : (
           <div className="admin-photo-list">
             {photos.map((photo) => {
               const { data } = supabase.storage.from(BUCKET).getPublicUrl(photo.storage_path)
+              const gallery = galleryById[photo.gallery_id]
+              const isCover = gallery?.cover_photo_id === photo.id
+
               return (
-                <article key={photo.id} className="admin-photo-row">
+                <article key={photo.id} className={isCover ? 'admin-photo-row is-cover' : 'admin-photo-row'}>
                   <img src={data.publicUrl} alt={photo.alt_text || ''} />
                   <div>
-                    <strong>{galleryById[photo.gallery_id]?.title || 'Galería'}</strong>
-                    <p>{photo.featured ? 'Destacada · ' : ''}{photo.published ? 'Publicada' : 'Oculta'}</p>
+                    <strong>{gallery?.title || 'Galería'}</strong>
+                    <p>
+                      {isCover ? 'Portada de galería · ' : ''}
+                      {photo.featured ? 'Destacada en Home · ' : ''}
+                      {photo.published ? 'Publicada' : 'Oculta'}
+                    </p>
                   </div>
-                  <button type="button" className="admin-link-button" onClick={() => handleDeletePhoto(photo)}>Eliminar</button>
+                  <div className="admin-photo-actions">
+                    <button
+                      type="button"
+                      className="admin-link-button"
+                      disabled={isCover || savingCoverId === photo.id}
+                      onClick={() => handleSetGalleryCover(photo)}
+                    >
+                      {isCover ? 'Portada actual' : savingCoverId === photo.id ? 'Guardando…' : 'Usar como portada'}
+                    </button>
+                    <button type="button" className="admin-link-button" onClick={() => handleDeletePhoto(photo)}>Eliminar</button>
+                  </div>
                 </article>
               )
             })}
