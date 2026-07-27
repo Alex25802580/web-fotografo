@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { supabase } from '../lib/supabase'
 import { formatFileSize, optimizeImage } from '../lib/imageProcessing'
 
@@ -19,6 +20,26 @@ function AdminHomePhotos() {
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
   const [inputKey, setInputKey] = useState(0)
+  const [mountNode, setMountNode] = useState(null)
+
+  useEffect(() => {
+    const dashboard = document.querySelector('.admin-dashboard')
+    const topGrid = dashboard?.querySelector('.admin-grid')
+    if (!dashboard || !topGrid) return undefined
+
+    let node = dashboard.querySelector('.admin-home-photos-mount')
+    if (!node) {
+      node = document.createElement('div')
+      node.className = 'admin-home-photos-mount'
+      topGrid.insertAdjacentElement('afterend', node)
+    }
+
+    setMountNode(node)
+
+    return () => {
+      if (node?.parentNode) node.parentNode.removeChild(node)
+    }
+  }, [])
 
   const loadPhotos = async () => {
     const { data, error: loadError } = await supabase
@@ -113,7 +134,9 @@ function AdminHomePhotos() {
     await loadPhotos()
   }
 
-  return (
+  if (!mountNode) return null
+
+  return createPortal(
     <section className="admin-card admin-list-card">
       <h2>Fotografías de portada</h2>
       <p className="admin-help">Estas fotografías son independientes de Weddings y Personal. Solo se muestran en Home.</p>
@@ -164,7 +187,8 @@ function AdminHomePhotos() {
           })}
         </div>
       )}
-    </section>
+    </section>,
+    mountNode,
   )
 }
 
