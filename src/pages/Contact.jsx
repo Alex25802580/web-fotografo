@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { useLanguage } from '../context/LanguageContext'
 
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/maqrlwlw'
 
 function Contact() {
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
+  const { t } = useLanguage()
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -25,7 +27,7 @@ function Contact() {
 
       if (!response.ok) {
         const data = await response.json().catch(() => null)
-        const message = data?.errors?.map((item) => item.message).join(' ') || 'The message could not be sent.'
+        const message = data?.errors?.map((item) => item.message).join(' ') || t.contact.error
         throw new Error(message)
       }
 
@@ -33,44 +35,44 @@ function Contact() {
       setStatus('success')
     } catch (submitError) {
       setStatus('error')
-      setError(submitError.message || 'The message could not be sent. Please try again.')
+      setError(submitError.message || t.contact.retry)
     }
   }
 
   return (
     <section className="text-page contact-page" aria-labelledby="contact-title">
-      <form className="contact-form" onSubmit={handleSubmit} aria-label="Contact form">
-        <h1 id="contact-title">Contact</h1>
+      <form className="contact-form" onSubmit={handleSubmit} aria-label={t.contact.formLabel}>
+        <h1 id="contact-title">{t.contact.title}</h1>
 
         <label>
-          Name
+          {t.contact.name}
           <input type="text" name="name" autoComplete="name" required />
         </label>
 
         <label>
-          Email
+          {t.contact.email}
           <input type="email" name="email" autoComplete="email" required />
         </label>
 
         <label>
-          Phone
+          {t.contact.phone}
           <input type="tel" name="phone" autoComplete="tel" />
         </label>
 
         <label>
-          Message
+          {t.contact.message}
           <textarea name="message" rows="6" required />
         </label>
 
-        <input type="hidden" name="_subject" value="New enquiry from Diego Carrasco's website" />
+        <input type="hidden" name="_subject" value={t.contact.subject} />
 
         <button type="submit" disabled={status === 'sending'}>
-          {status === 'sending' ? 'Sending…' : 'Send enquiry'}
+          {status === 'sending' ? t.contact.sending : t.contact.send}
         </button>
 
         {status === 'success' && (
           <p className="form-notice" role="status">
-            Message sent successfully. Thank you for getting in touch.
+            {t.contact.success}
           </p>
         )}
 
