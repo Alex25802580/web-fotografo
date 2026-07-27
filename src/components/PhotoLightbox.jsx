@@ -81,11 +81,12 @@ function PhotoLightbox({ photos, activeIndex, onClose, onChange }) {
         </button>
       )}
 
-      <div className="photo-lightbox-stage" onClick={(event) => event.stopPropagation()}>
+      <div className="photo-lightbox-stage">
         <img
           key={activePhoto.id || activePhoto.publicUrl || activePhoto.src}
           src={activePhoto.publicUrl || activePhoto.src}
           alt={activePhoto.alt_text || activePhoto.alt || ''}
+          onClick={(event) => event.stopPropagation()}
         />
       </div>
 
