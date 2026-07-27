@@ -11,22 +11,10 @@ import CategoryPage from './pages/CategoryPage'
 import GalleryPage from './pages/GalleryPage'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
-import AdminHomePhotos from './pages/AdminHomePhotos'
 import './admin.css'
 import './admin-upload.css'
 import './admin-home.css'
 import './public-gallery.css'
-
-function AdminPage() {
-  return (
-    <>
-      <AdminDashboard />
-      <div className="admin-dashboard admin-home-photos-section">
-        <AdminHomePhotos />
-      </div>
-    </>
-  )
-}
 
 function AppContent() {
   const location = useLocation()
@@ -47,7 +35,7 @@ function AppContent() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route element={<ProtectedAdminRoute />}>
-          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Route>
       </Routes>
       {!isAdminRoute && <Footer />}
