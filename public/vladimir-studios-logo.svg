@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 48" role="img" aria-labelledby="title desc">
+  <title id="title">Vladimir Studios</title>
+  <desc id="desc">Minimal uppercase Vladimir Studios wordmark with a subtle soft blur.</desc>
+  <defs>
+    <filter id="softBlur" x="-20%" y="-60%" width="140%" height="220%">
+      <feGaussianBlur stdDeviation="1.4"/>
+    </filter>
+  </defs>
+  <text x="6" y="31" fill="#777" opacity="0.32" filter="url(#softBlur)" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="300" letter-spacing="5.1">VLADIMIR STUDIOS</text>
+  <text x="6" y="31" fill="#111" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="300" letter-spacing="5.1">VLADIMIR STUDIOS</text>
+</svg>
