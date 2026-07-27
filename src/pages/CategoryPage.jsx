@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import PhotoLightbox from '../components/PhotoLightbox'
+import { useLanguage } from '../context/LanguageContext'
 import { supabase } from '../lib/supabase'
 
 const BUCKET = 'PORTFOLIO'
@@ -8,17 +9,18 @@ const BUCKET = 'PORTFOLIO'
 function CategoryPage() {
   const { categorySlug: routeSlug } = useParams()
   const location = useLocation()
+  const { t } = useLanguage()
   const categorySlug = routeSlug || location.pathname.replace(/^\//, '')
   const [categoryName, setCategoryName] = useState('')
   const [photos, setPhotos] = useState([])
   const [activePhotoIndex, setActivePhotoIndex] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const [errorKey, setErrorKey] = useState('')
 
   useEffect(() => {
     const loadCategory = async () => {
       setLoading(true)
-      setError('')
+      setErrorKey('')
       setActivePhotoIndex(null)
 
       const { data: categoryData, error: categoryError } = await supabase
@@ -28,7 +30,7 @@ function CategoryPage() {
         .single()
 
       if (categoryError) {
-        setError('This category could not be found.')
+        setErrorKey('categoryNotFound')
         setLoading(false)
         return
       }
@@ -41,7 +43,7 @@ function CategoryPage() {
         .order('position')
 
       if (galleriesError) {
-        setError(galleriesError.message)
+        setErrorKey('categoryNotFound')
         setLoading(false)
         return
       }
@@ -58,7 +60,7 @@ function CategoryPage() {
           .order('position')
 
         if (photosError) {
-          setError(photosError.message)
+          setErrorKey('categoryNotFound')
           setLoading(false)
           return
         }
@@ -88,30 +90,30 @@ function CategoryPage() {
 
   if (loading) {
     return (
-      <main className="public-status-page public-status-page--loading" role="status" aria-label="Loading photographs">
+      <main className="public-status-page public-status-page--loading" role="status" aria-label={t.gallery.loading}>
         <span className="loading-spinner" aria-hidden="true" />
       </main>
     )
   }
-  if (error) return <main className="public-status-page">{error}</main>
+  if (errorKey) return <main className="public-status-page">{t.gallery[errorKey]}</main>
 
   return (
     <main className="category-page category-page--photos-only">
       {photos.length === 0 ? (
-        <p className="empty-gallery-message">There are no published photographs yet.</p>
+        <p className="empty-gallery-message">{t.gallery.emptyCategory}</p>
       ) : (
-        <section className="photo-grid" aria-label={`${categoryName} photographs`}>
+        <section className="photo-grid" aria-label={`${categoryName} ${t.gallery.photosLabel}`}>
           {photos.map((photo, index) => (
             <button
               className="photo-grid-item"
               type="button"
               key={photo.id}
               onClick={() => setActivePhotoIndex(index)}
-              aria-label={`Open photograph ${index + 1}`}
+              aria-label={`${t.gallery.openPhoto} ${index + 1}`}
             >
               <img
                 src={photo.publicUrl}
-                alt={photo.alt_text || `Photograph ${index + 1}`}
+                alt={photo.alt_text || `${t.gallery.photo} ${index + 1}`}
                 loading={index < 6 ? 'eager' : 'lazy'}
               />
             </button>
