@@ -1,11 +1,23 @@
 import { useEffect, useRef } from 'react'
 
+const TEMP_DOWNLOAD_URL = 'https://www.swisstransfer.com/d/9ed412f9-9ad5-4a67-803f-7e3bf53dfc14'
+
 function ChevronIcon({ direction }) {
   const points = direction === 'previous' ? '15 18 9 12 15 6' : '9 18 15 12 9 6'
 
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <polyline points={points} />
+    </svg>
+  )
+}
+
+function DownloadIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 4v10" />
+      <path d="m8 10 4 4 4-4" />
+      <path d="M5 19h14" />
     </svg>
   )
 }
@@ -62,6 +74,18 @@ function PhotoLightbox({ photos, activeIndex, onClose, onChange }) {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
+      <a
+        className="photo-lightbox-download"
+        href={TEMP_DOWNLOAD_URL}
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Download high-resolution photograph"
+        title="Download high-resolution photograph"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <DownloadIcon />
+      </a>
+
       <button className="photo-lightbox-close" type="button" onClick={onClose} aria-label="Close image">
         <span aria-hidden="true" />
         <span aria-hidden="true" />
