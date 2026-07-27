@@ -3,6 +3,7 @@ import Header from './components/Header'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
 import ProtectedAdminRoute from './components/ProtectedAdminRoute'
+import GalleryNameEditor from './components/GalleryNameEditor'
 import { LanguageProvider } from './context/LanguageContext'
 import Overview from './pages/Overview'
 import About from './pages/About'
@@ -15,6 +16,15 @@ import './admin.css'
 import './admin-upload.css'
 import './admin-home.css'
 import './public-gallery.css'
+
+function AdminPage() {
+  return (
+    <>
+      <AdminDashboard />
+      <GalleryNameEditor />
+    </>
+  )
+}
 
 function AppContent() {
   const location = useLocation()
@@ -35,7 +45,7 @@ function AppContent() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route element={<ProtectedAdminRoute />}>
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Route>
       </Routes>
       {!isAdminRoute && <Footer />}
