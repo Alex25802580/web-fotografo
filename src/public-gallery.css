@@ -7,8 +7,8 @@
 
 .gallery-card-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(2.5rem, 5vw, 5.5rem) clamp(1.25rem, 3vw, 3rem);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(2rem, 4vw, 4rem) clamp(1rem, 2vw, 2rem);
 }
 
 .gallery-card {
@@ -39,10 +39,11 @@
 }
 
 .gallery-card h2 {
-  margin: .9rem 0 0;
-  font-size: clamp(.85rem, 1.05vw, 1rem);
+  margin: .85rem 0 0;
+  font-size: clamp(.8rem, .95vw, .95rem);
   font-weight: 300;
   letter-spacing: .08em;
+  text-align: center;
   text-transform: uppercase;
 }
 
@@ -245,6 +246,10 @@
 }
 
 @media (max-width: 900px) {
+  .gallery-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .photo-grid { column-count: 2; }
   .photo-lightbox { padding-right: 3.5rem; padding-left: 3.5rem; }
 }
@@ -257,11 +262,15 @@
   }
 
   .gallery-card-grid {
-    grid-template-columns: 1fr;
-    gap: 2.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem .8rem;
   }
 
-  .gallery-card h2 { margin-top: .75rem; }
+  .gallery-card h2 {
+    margin-top: .65rem;
+    font-size: .72rem;
+    line-height: 1.35;
+  }
 
   .photo-grid { column-count: 1; }
 
