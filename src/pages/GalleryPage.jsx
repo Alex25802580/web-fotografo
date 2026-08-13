@@ -3,8 +3,7 @@ import { useParams } from 'react-router-dom'
 import PhotoLightbox from '../components/PhotoLightbox'
 import { translations, useLanguage } from '../context/LanguageContext'
 import { supabase } from '../lib/supabase'
-
-const BUCKET = 'PORTFOLIO'
+import { getPortfolioPublicUrl } from '../lib/portfolioStorage'
 
 function GalleryPage() {
   const { gallerySlug } = useParams()
@@ -52,7 +51,7 @@ function GalleryPage() {
       setPhotos(
         (photoData || []).map((photo) => ({
           ...photo,
-          publicUrl: supabase.storage.from(BUCKET).getPublicUrl(photo.storage_path).data.publicUrl,
+          publicUrl: getPortfolioPublicUrl(photo.storage_path),
         })),
       )
       setLoading(false)

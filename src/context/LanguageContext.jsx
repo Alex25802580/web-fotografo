@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
 const LanguageContext = createContext(null)
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const translations = {
   en: {
     nav: { home: 'Home', weddings: 'Weddings', personal: 'Personal', about: 'About', contact: 'Contact' },
@@ -111,6 +112,7 @@ export function LanguageProvider({ children }) {
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useLanguage() {
   const context = useContext(LanguageContext)
   if (!context) throw new Error('useLanguage must be used inside LanguageProvider')

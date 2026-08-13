@@ -1,3 +1,5 @@
+.route-loading { min-height: 100svh; }
+
 .category-page--galleries,
 .category-page--photos-only,
 .gallery-page--photos-only {

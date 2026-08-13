@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { supabase } from '../lib/supabase'
+import { PORTFOLIO_BUCKET, getPortfolioPublicUrl } from '../lib/portfolioStorage'
 import { formatFileSize, optimizeImage } from '../lib/imageProcessing'
+import '../admin.css'
+import '../admin-upload.css'
 
-const BUCKET = 'PORTFOLIO'
 const HOME_FOLDER = 'home'
 
 const safeFilename = (value) =>
@@ -34,9 +36,10 @@ function AdminHomePhotos() {
       topGrid.insertAdjacentElement('afterend', node)
     }
 
-    setMountNode(node)
+    const timeoutId = window.setTimeout(() => setMountNode(node), 0)
 
     return () => {
+      window.clearTimeout(timeoutId)
       if (node?.parentNode) node.parentNode.removeChild(node)
     }
   }, [])
@@ -56,7 +59,8 @@ function AdminHomePhotos() {
   }
 
   useEffect(() => {
-    loadPhotos()
+    const timeoutId = window.setTimeout(loadPhotos, 0)
+    return () => window.clearTimeout(timeoutId)
   }, [])
 
   const handleUpload = async (event) => {
@@ -77,7 +81,7 @@ function AdminHomePhotos() {
         const path = `${HOME_FOLDER}/${crypto.randomUUID()}-${safeFilename(optimizedFile.name)}`
 
         const { error: uploadError } = await supabase.storage
-          .from(BUCKET)
+          .from(PORTFOLIO_BUCKET)
           .upload(path, optimizedFile, {
             cacheControl: '31536000',
             contentType: 'image/webp',
@@ -94,7 +98,7 @@ function AdminHomePhotos() {
         })
 
         if (insertError) {
-          await supabase.storage.from(BUCKET).remove([path])
+          await supabase.storage.from(PORTFOLIO_BUCKET).remove([path])
           throw insertError
         }
       } catch (uploadError) {
@@ -118,7 +122,7 @@ function AdminHomePhotos() {
   const handleDelete = async (photo) => {
     if (!window.confirm('¿Eliminar esta fotografía de portada?')) return
 
-    const { error: storageError } = await supabase.storage.from(BUCKET).remove([photo.storage_path])
+    const { error: storageError } = await supabase.storage.from(PORTFOLIO_BUCKET).remove([photo.storage_path])
     if (storageError) {
       setError(storageError.message)
       return
@@ -171,10 +175,10 @@ function AdminHomePhotos() {
       {photos.length > 0 && (
         <div className="admin-photo-list">
           {photos.map((photo) => {
-            const { data } = supabase.storage.from(BUCKET).getPublicUrl(photo.storage_path)
+            const publicUrl = getPortfolioPublicUrl(photo.storage_path)
             return (
               <article key={photo.id} className="admin-photo-row">
-                <img src={data.publicUrl} alt={photo.alt_text || ''} />
+                  <img src={publicUrl} alt={photo.alt_text || ''} />
                 <div>
                   <strong>Home</strong>
                   <p>{photo.published ? 'Publicada' : 'Oculta'}</p>

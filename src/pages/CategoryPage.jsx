@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { translations, useLanguage } from '../context/LanguageContext'
 import { supabase } from '../lib/supabase'
-
-const BUCKET = 'PORTFOLIO'
+import { getPortfolioPublicUrl } from '../lib/portfolioStorage'
 
 function CategoryPage() {
   const { categorySlug: routeSlug } = useParams()
@@ -81,7 +80,7 @@ function CategoryPage() {
           coverPhoto: coverPhoto
             ? {
                 ...coverPhoto,
-                publicUrl: supabase.storage.from(BUCKET).getPublicUrl(coverPhoto.storage_path).data.publicUrl,
+                publicUrl: getPortfolioPublicUrl(coverPhoto.storage_path),
               }
             : null,
         }

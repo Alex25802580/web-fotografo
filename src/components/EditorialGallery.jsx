@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import PhotoLightbox from './PhotoLightbox'
 import { supabase } from '../lib/supabase'
-
-const BUCKET = 'PORTFOLIO'
+import { getPortfolioPublicUrl } from '../lib/portfolioStorage'
 
 function EditorialGallery() {
   const [photographs, setPhotographs] = useState([])
@@ -27,7 +26,7 @@ function EditorialGallery() {
         setPhotographs(
           (data || []).map((photo) => ({
             ...photo,
-            publicUrl: supabase.storage.from(BUCKET).getPublicUrl(photo.storage_path).data.publicUrl,
+            publicUrl: getPortfolioPublicUrl(photo.storage_path),
           })),
         )
       }

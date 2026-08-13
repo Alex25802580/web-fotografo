@@ -24,7 +24,8 @@ function GalleryNameEditor() {
   }
 
   useEffect(() => {
-    loadGalleries()
+    const timeoutId = window.setTimeout(loadGalleries, 0)
+    return () => window.clearTimeout(timeoutId)
   }, [])
 
   const startEditing = (gallery) => {

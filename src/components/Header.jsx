@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 
 function Header() {
   const [isOpen, setIsOpen] = useState(false)
-  const { pathname } = useLocation()
   const { language, setLanguage, t } = useLanguage()
 
   const navigation = [
@@ -20,13 +19,9 @@ function Header() {
     return () => document.body.classList.remove('menu-open')
   }, [isOpen])
 
-  useEffect(() => {
-    setIsOpen(false)
-  }, [pathname])
-
   return (
     <header className="site-header">
-      <Link className="brand" to="/" aria-label="Vladimir Studios home">
+      <Link className="brand" to="/" aria-label="Vladimir Studios home" onClick={() => setIsOpen(false)}>
         <img className="brand-logo" src="/vladimir-studios-logo.svg" alt="Vladimir Studios" />
       </Link>
 
@@ -50,6 +45,7 @@ function Header() {
             to={item.to}
             end={item.to === '/'}
             className={({ isActive }) => (isActive ? 'is-active' : undefined)}
+            onClick={() => setIsOpen(false)}
           >
             {item.label}
           </NavLink>

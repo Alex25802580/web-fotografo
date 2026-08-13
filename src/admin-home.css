@@ -1,8 +1,4 @@
 .admin-home-button {
-  position: absolute;
-  z-index: 10;
-  top: clamp(1.25rem, 3vw, 3rem);
-  right: clamp(8.75rem, 13vw, 11rem);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -16,6 +12,12 @@
   text-transform: uppercase;
 }
 
+.admin-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
 .admin-home-button:hover,
 .admin-home-button:focus-visible {
   background: #111;
@@ -23,12 +25,5 @@
 }
 
 @media (max-width: 760px) {
-  .admin-home-button {
-    top: 1.25rem;
-    right: 1.25rem;
-  }
-
-  .admin-dashboard .admin-toolbar {
-    padding-top: 4.5rem;
-  }
+  .admin-toolbar-actions { flex-wrap: wrap; }
 }

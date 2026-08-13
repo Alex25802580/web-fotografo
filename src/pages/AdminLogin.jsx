@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import '../admin.css'
 
 function AdminLogin() {
   const navigate = useNavigate()

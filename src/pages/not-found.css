@@ -1,0 +1,29 @@
+.not-found-page {
+  display: grid;
+  min-height: 65svh;
+  place-content: center;
+  justify-items: center;
+  padding: clamp(4rem, 8vw, 8rem) var(--page-padding);
+  text-align: center;
+}
+
+.not-found-page p {
+  margin: 0 0 1rem;
+  font-size: .62rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.not-found-page h1 {
+  margin: 0 0 2.5rem;
+  font-size: clamp(2.8rem, 7vw, 7rem);
+  font-weight: 300;
+  letter-spacing: -.045em;
+}
+
+.not-found-page a {
+  border-bottom: 1px solid currentColor;
+  font-size: .66rem;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}

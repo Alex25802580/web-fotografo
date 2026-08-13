@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { PORTFOLIO_BUCKET, getPortfolioPublicUrl } from '../lib/portfolioStorage'
 import { formatFileSize, optimizeImage } from '../lib/imageProcessing'
+import '../admin.css'
+import '../admin-upload.css'
+import '../admin-home.css'
 
-const BUCKET = 'PORTFOLIO'
 
 const createSlug = (value) =>
   value
@@ -93,7 +96,8 @@ function AdminDashboard() {
   }
 
   useEffect(() => {
-    loadData()
+    const timeoutId = window.setTimeout(loadData, 0)
+    return () => window.clearTimeout(timeoutId)
   }, [])
 
   const showSuccess = (message) => {
@@ -188,7 +192,7 @@ function AdminDashboard() {
     const storagePaths = galleryPhotos.map((photo) => photo.storage_path).filter(Boolean)
 
     if (storagePaths.length > 0) {
-      const { error: storageError } = await supabase.storage.from(BUCKET).remove(storagePaths)
+      const { error: storageError } = await supabase.storage.from(PORTFOLIO_BUCKET).remove(storagePaths)
 
       if (storageError) {
         setDeletingGalleryId(null)
@@ -290,7 +294,7 @@ function AdminDashboard() {
         const optimizedFile = await optimizeImage(originalFile)
         const path = `${gallery.slug}/${crypto.randomUUID()}-${safeFilename(optimizedFile.name)}`
         const { error: uploadError } = await supabase.storage
-          .from(BUCKET)
+          .from(PORTFOLIO_BUCKET)
           .upload(path, optimizedFile, {
             cacheControl: '31536000',
             contentType: 'image/webp',
@@ -309,7 +313,7 @@ function AdminDashboard() {
         })
 
         if (insertError) {
-          await supabase.storage.from(BUCKET).remove([path])
+          await supabase.storage.from(PORTFOLIO_BUCKET).remove([path])
           throw insertError
         }
 
@@ -355,7 +359,9 @@ function AdminDashboard() {
       }
     }
 
-    const { error: storageError } = await supabase.storage.from(BUCKET).remove([photo.storage_path])
+    const { error: storageError } = await supabase.storage
+      .from(PORTFOLIO_BUCKET)
+      .remove([photo.storage_path])
     if (storageError) {
       setError(storageError.message)
       return
@@ -383,7 +389,12 @@ function AdminDashboard() {
           <p className="admin-eyebrow">Diego Carrasco</p>
           <h1>Administración</h1>
         </div>
-        <button type="button" className="admin-secondary-button" onClick={handleLogout}>Cerrar sesión</button>
+        <div className="admin-toolbar-actions">
+          <Link className="admin-home-button" to="/">Home</Link>
+          <button type="button" className="admin-secondary-button" onClick={handleLogout}>
+            Cerrar sesión
+          </button>
+        </div>
       </header>
 
       {notice && <p className="admin-message admin-message--success">{notice}</p>}
@@ -530,13 +541,13 @@ function AdminDashboard() {
         {loading ? <p>Cargando…</p> : photos.length === 0 ? <p>No hay fotografías todavía.</p> : (
           <div className="admin-photo-list">
             {photos.map((photo) => {
-              const { data } = supabase.storage.from(BUCKET).getPublicUrl(photo.storage_path)
+              const publicUrl = getPortfolioPublicUrl(photo.storage_path)
               const gallery = galleryById[photo.gallery_id]
               const isCover = gallery?.cover_photo_id === photo.id
 
               return (
                 <article key={photo.id} className={isCover ? 'admin-photo-row is-cover' : 'admin-photo-row'}>
-                  <img src={data.publicUrl} alt={photo.alt_text || ''} />
+                  <img src={publicUrl} alt={photo.alt_text || ''} />
                   <div>
                     <strong>{gallery?.title || 'Galería'}</strong>
                     <p>{isCover ? 'Portada de galería · ' : ''}{photo.featured ? 'Destacada en Home · ' : ''}{photo.published ? 'Publicada' : 'Oculta'}</p>
