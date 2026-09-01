@@ -1,0 +1,298 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&display=swap');
+
+/* Selector temporal de propuestas Home */
+.navigation-item-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+}
+
+.home-preview-select-wrap {
+  display: inline-flex;
+  align-items: center;
+}
+
+.home-preview-select-wrap select {
+  position: relative;
+  top: -2px;
+  width: 2.35rem;
+  margin: 0;
+  padding: 0 .75rem 0 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #777;
+  font: 300 .6rem/1 'Inter', Arial, sans-serif;
+  letter-spacing: .08em;
+  cursor: pointer;
+}
+
+/* 01 — versión actual refinada: mismo lenguaje, arranque más cercano al navbar */
+.home-variant-1 {
+  padding-top: clamp(1.25rem, 2.3vw, 2.5rem);
+}
+
+.home-grid-variant-1 {
+  column-count: 3;
+  column-gap: clamp(.85rem, 1.6vw, 1.5rem);
+}
+
+.home-grid-variant-1 .photo-grid-item {
+  margin-bottom: clamp(.85rem, 1.6vw, 1.5rem);
+}
+
+/* 02 — editorial compacto: inspirado en portfolios con navegación superior contenida */
+.home-preview-variant-2.site-header {
+  min-height: 4rem;
+  padding-left: clamp(1.2rem, 2.4vw, 2.5rem);
+  padding-right: clamp(1.2rem, 2.4vw, 2.5rem);
+  border-bottom-color: transparent;
+}
+
+.home-preview-variant-2 .brand-logo {
+  width: clamp(9.5rem, 12vw, 11.5rem);
+}
+
+.home-preview-variant-2 .navigation {
+  gap: clamp(1rem, 1.6vw, 1.8rem);
+}
+
+.home-variant-2 {
+  padding: .7rem clamp(1.2rem, 2.4vw, 2.5rem) clamp(5rem, 7vw, 7rem);
+}
+
+.home-grid-variant-2 {
+  column-count: 3;
+  column-gap: .55rem;
+}
+
+.home-grid-variant-2 .photo-grid-item {
+  margin-bottom: .55rem;
+}
+
+.home-grid-variant-2 .photo-grid-item:nth-child(6n + 2),
+.home-grid-variant-2 .photo-grid-item:nth-child(6n + 5) {
+  transform: none;
+}
+
+/* 03 — grid muy limpio y denso: fotografías empiezan casi inmediatamente */
+.home-preview-variant-3.site-header {
+  min-height: 3.8rem;
+  border-bottom: 0;
+}
+
+.home-preview-variant-3 .brand-logo {
+  width: clamp(9rem, 11vw, 10.5rem);
+}
+
+.home-preview-variant-3 .navigation a {
+  font-size: .62rem;
+  letter-spacing: .11em;
+}
+
+.home-variant-3 {
+  padding: .35rem var(--page-padding) 6rem;
+}
+
+.home-grid-variant-3 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .55rem;
+  column-count: initial;
+}
+
+.home-grid-variant-3 .photo-grid-item {
+  width: 100%;
+  margin: 0;
+  aspect-ratio: 4 / 5;
+  transform: none !important;
+}
+
+.home-grid-variant-3 .photo-grid-item:nth-child(5n + 1),
+.home-grid-variant-3 .photo-grid-item:nth-child(7n + 4) {
+  grid-column: span 2;
+  aspect-ratio: 8 / 5;
+}
+
+.home-grid-variant-3 .photo-grid-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 04 — editorial de revista: tipografía serif y composiciones grandes */
+.home-preview-variant-4.site-header {
+  min-height: 5.4rem;
+  border-bottom: 0;
+}
+
+.home-preview-variant-4 .brand-logo {
+  width: clamp(10rem, 13vw, 12rem);
+}
+
+.home-preview-variant-4 .navigation a,
+.home-preview-variant-4 .language-select-wrap select,
+.home-preview-variant-4 .home-preview-select-wrap select {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: .8rem;
+  letter-spacing: .06em;
+}
+
+.home-variant-4 {
+  padding: clamp(1rem, 2vw, 2rem) clamp(2rem, 6vw, 7rem) 8rem;
+}
+
+.home-grid-variant-4 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(2rem, 4vw, 4rem) clamp(1rem, 2.5vw, 2.5rem);
+  column-count: initial;
+}
+
+.home-grid-variant-4 .photo-grid-item {
+  grid-column: span 5;
+  margin: 0;
+  transform: none !important;
+}
+
+.home-grid-variant-4 .photo-grid-item:nth-child(4n + 1) {
+  grid-column: 1 / span 7;
+}
+
+.home-grid-variant-4 .photo-grid-item:nth-child(4n + 2) {
+  grid-column: 8 / span 5;
+  align-self: end;
+}
+
+.home-grid-variant-4 .photo-grid-item:nth-child(4n + 3) {
+  grid-column: 2 / span 4;
+}
+
+.home-grid-variant-4 .photo-grid-item:nth-child(4n) {
+  grid-column: 7 / span 6;
+}
+
+/* 05 — casi full bleed: navbar más centrado, imágenes dominantes */
+.home-preview-variant-5.site-header {
+  min-height: 4.4rem;
+  padding-left: clamp(1rem, 2vw, 2rem);
+  padding-right: clamp(1rem, 2vw, 2rem);
+  border-bottom: 0;
+}
+
+.home-preview-variant-5 .navigation {
+  gap: clamp(.9rem, 1.35vw, 1.5rem);
+}
+
+.home-preview-variant-5 .brand-logo {
+  width: clamp(9.5rem, 11vw, 10.75rem);
+}
+
+.home-variant-5 {
+  padding: .4rem clamp(.6rem, 1.2vw, 1.1rem) 5rem;
+}
+
+.home-grid-variant-5 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(.5rem, .8vw, .85rem);
+  column-count: initial;
+}
+
+.home-grid-variant-5 .photo-grid-item {
+  margin: 0;
+  transform: none !important;
+}
+
+.home-grid-variant-5 .photo-grid-item:nth-child(5n + 1) {
+  grid-column: 1 / -1;
+}
+
+.home-grid-variant-5 .photo-grid-item:nth-child(5n + 1) img {
+  width: 100%;
+  max-height: 86svh;
+  object-fit: cover;
+}
+
+@media (max-width: 900px) {
+  .home-grid-variant-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-grid-variant-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 1rem;
+  }
+
+  .home-grid-variant-4 .photo-grid-item,
+  .home-grid-variant-4 .photo-grid-item:nth-child(n) {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 800px) {
+  .navigation-item-wrap {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: .75rem;
+  }
+
+  .home-preview-select-wrap select {
+    top: 0;
+    width: 2.8rem;
+    font-size: .72rem;
+  }
+
+  .home-preview-variant-2.site-header,
+  .home-preview-variant-3.site-header,
+  .home-preview-variant-4.site-header,
+  .home-preview-variant-5.site-header {
+    min-height: 4.5rem;
+    padding: 0 var(--page-padding);
+  }
+
+  .home-preview-variant-2 .brand-logo,
+  .home-preview-variant-3 .brand-logo,
+  .home-preview-variant-4 .brand-logo,
+  .home-preview-variant-5 .brand-logo {
+    width: 9.75rem;
+  }
+
+  .home-preview-variant-4 .navigation a {
+    font-family: 'Inter', Arial, sans-serif;
+    font-size: clamp(1.5rem, 8vw, 2.4rem);
+  }
+
+  .home-variant-2,
+  .home-variant-3,
+  .home-variant-4,
+  .home-variant-5 {
+    padding-top: .6rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .home-grid-variant-1,
+  .home-grid-variant-2 {
+    column-count: 2;
+  }
+
+  .home-grid-variant-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .45rem;
+  }
+
+  .home-grid-variant-3 .photo-grid-item:nth-child(5n + 1),
+  .home-grid-variant-3 .photo-grid-item:nth-child(7n + 4) {
+    grid-column: span 2;
+  }
+
+  .home-grid-variant-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .home-grid-variant-5 {
+    grid-template-columns: 1fr;
+  }
+}
