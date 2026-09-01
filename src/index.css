@@ -29,7 +29,6 @@ img { display: block; max-width: 100%; }
   gap: clamp(3rem, 7vw, 7rem);
   padding: 0 var(--page-padding);
   background: #fcfcfc;
-  border-bottom: 1px solid #e9e9e9;
 }
 
 .brand {
@@ -183,7 +182,7 @@ img { display: block; max-width: 100%; }
 .contact-form button { justify-self: start; padding: .9rem 1.5rem; border: 1px solid #1f1f1f; background: #1f1f1f; color: #fcfcfc; font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
 .form-notice { margin: 0; color: #666; font-size: .75rem; line-height: 1.5; }
 
-.site-footer { display: flex; justify-content: flex-start; padding: 2rem var(--page-padding); border-top: 1px solid #e9e9e9; }
+.site-footer { display: flex; justify-content: flex-start; padding: 2rem var(--page-padding); }
 .site-footer p { margin: 0; font-size: .58rem; font-weight: 300; letter-spacing: .1em; text-transform: uppercase; }
 .scroll-top { position: fixed; z-index: 30; right: clamp(1rem, 2.5vw, 2.5rem); bottom: clamp(1rem, 2.5vw, 2.5rem); display: grid; width: 2.75rem; height: 2.75rem; place-items: center; padding: 0; border: 1px solid #1f1f1f; border-radius: 50%; background: rgba(252, 252, 252, .94); font-size: 1rem; cursor: pointer; opacity: 0; pointer-events: none; transform: translateY(.5rem); transition: opacity .25s ease, transform .25s ease; }
 .scroll-top.is-visible { opacity: 1; pointer-events: auto; transform: none; }
