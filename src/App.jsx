@@ -10,6 +10,7 @@ import Contact from './pages/Contact'
 import CategoryPage from './pages/CategoryPage'
 import GalleryPage from './pages/GalleryPage'
 import './public-gallery.css'
+import './home-preview.css'
 
 const ProtectedAdminRoute = lazy(() => import('./components/ProtectedAdminRoute'))
 const AdminLogin = lazy(() => import('./pages/AdminLogin'))
@@ -35,17 +36,17 @@ function AppContent() {
       {!isAdminRoute && <Header />}
       <Suspense fallback={<main className="route-loading" aria-label="Loading" />}>
         <Routes>
-        <Route path="/" element={<Overview />} />
-        <Route path="/weddings" element={<CategoryPage />} />
-        <Route path="/personal" element={<CategoryPage />} />
-        <Route path="/category/:categorySlug" element={<CategoryPage />} />
-        <Route path="/gallery/:gallerySlug" element={<GalleryPage />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route element={<ProtectedAdminRoute />}>
-          <Route path="/admin" element={<AdminPage />} />
-        </Route>
+          <Route path="/" element={<Overview />} />
+          <Route path="/weddings" element={<CategoryPage />} />
+          <Route path="/personal" element={<CategoryPage />} />
+          <Route path="/category/:categorySlug" element={<CategoryPage />} />
+          <Route path="/gallery/:gallerySlug" element={<GalleryPage />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route element={<ProtectedAdminRoute />}>
+            <Route path="/admin" element={<AdminPage />} />
+          </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
