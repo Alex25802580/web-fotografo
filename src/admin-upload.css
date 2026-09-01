@@ -54,3 +54,8 @@
   font-size: .78rem;
   line-height: 1.5;
 }
+
+/* La portada se gestiona de forma independiente desde home_photos. */
+.admin-grid > .admin-card:nth-child(2) .admin-form > label:nth-of-type(5) {
+  display: none;
+}
