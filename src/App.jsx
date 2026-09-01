@@ -10,7 +10,6 @@ import Contact from './pages/Contact'
 import CategoryPage from './pages/CategoryPage'
 import GalleryPage from './pages/GalleryPage'
 import './public-gallery.css'
-import './home-preview.css'
 
 const ProtectedAdminRoute = lazy(() => import('./components/ProtectedAdminRoute'))
 const AdminLogin = lazy(() => import('./pages/AdminLogin'))
