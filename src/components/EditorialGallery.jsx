@@ -1,9 +1,17 @@
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import PhotoLightbox from './PhotoLightbox'
 import { supabase } from '../lib/supabase'
 import { getPortfolioPublicUrl } from '../lib/portfolioStorage'
 
+const getHomeVariant = (search) => {
+  const value = new URLSearchParams(search).get('home')
+  return ['1', '2', '3', '4', '5'].includes(value) ? value : '1'
+}
+
 function EditorialGallery() {
+  const location = useLocation()
+  const homeVariant = getHomeVariant(location.search)
   const [photographs, setPhotographs] = useState([])
   const [activePhotoIndex, setActivePhotoIndex] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -15,7 +23,7 @@ function EditorialGallery() {
 
       const { data, error: photosError } = await supabase
         .from('home_photos')
-        .select('*')
+        .select('id, storage_path, alt_text, position, published')
         .eq('published', true)
         .order('position')
         .limit(24)
@@ -50,8 +58,8 @@ function EditorialGallery() {
   }
 
   return (
-    <section className="editorial-gallery" id="selected-work" aria-label="Selected photographs">
-      <div className="photo-grid photo-grid--home">
+    <section className={`editorial-gallery home-variant home-variant-${homeVariant}`} id="selected-work" aria-label="Selected photographs">
+      <div className={`photo-grid photo-grid--home home-grid-variant-${homeVariant}`}>
         {photographs.map((photo, index) => (
           <button
             className="photo-grid-item"
@@ -63,7 +71,7 @@ function EditorialGallery() {
             <img
               src={photo.publicUrl}
               alt={photo.alt_text || `Photograph ${index + 1}`}
-              loading={index < 6 ? 'eager' : 'lazy'}
+              loading={index < 4 ? 'eager' : 'lazy'}
             />
           </button>
         ))}
