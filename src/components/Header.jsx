@@ -1,10 +1,19 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
+
+const getHomeVariant = (search) => {
+  const value = new URLSearchParams(search).get('home')
+  return ['1', '2', '3', '4', '5'].includes(value) ? value : '1'
+}
 
 function Header() {
   const [isOpen, setIsOpen] = useState(false)
+  const location = useLocation()
+  const navigate = useNavigate()
   const { language, setLanguage, t } = useLanguage()
+  const homeVariant = getHomeVariant(location.search)
+  const isHome = location.pathname === '/'
 
   const navigation = [
     { label: t.nav.home, to: '/' },
@@ -19,8 +28,14 @@ function Header() {
     return () => document.body.classList.remove('menu-open')
   }, [isOpen])
 
+  const handleVariantChange = (event) => {
+    const value = event.target.value
+    setIsOpen(false)
+    navigate(`/?home=${value}`)
+  }
+
   return (
-    <header className="site-header">
+    <header className={`site-header${isHome ? ` home-preview-variant-${homeVariant}` : ''}`}>
       <Link className="brand" to="/" aria-label="Vladimir Studios home" onClick={() => setIsOpen(false)}>
         <img className="brand-logo" src="/vladimir-studios-logo.svg" alt="Vladimir Studios" />
       </Link>
@@ -39,16 +54,29 @@ function Header() {
       </button>
 
       <nav id="navigation" className={isOpen ? 'navigation is-open' : 'navigation'} aria-label="Main navigation">
-        {navigation.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.to === '/'}
-            className={({ isActive }) => (isActive ? 'is-active' : undefined)}
-            onClick={() => setIsOpen(false)}
-          >
-            {item.label}
-          </NavLink>
+        {navigation.map((item, index) => (
+          <span className="navigation-item-wrap" key={item.to}>
+            <NavLink
+              to={item.to}
+              end={item.to === '/'}
+              className={({ isActive }) => (isActive ? 'is-active' : undefined)}
+              onClick={() => setIsOpen(false)}
+            >
+              {item.label}
+            </NavLink>
+
+            {index === 0 && (
+              <label className="home-preview-select-wrap" aria-label="Home design preview">
+                <select value={homeVariant} onChange={handleVariantChange}>
+                  <option value="1">01</option>
+                  <option value="2">02</option>
+                  <option value="3">03</option>
+                  <option value="4">04</option>
+                  <option value="5">05</option>
+                </select>
+              </label>
+            )}
+          </span>
         ))}
 
         <label className="language-select-wrap" aria-label="Language">
