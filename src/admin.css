@@ -94,6 +94,10 @@
 
 .admin-check input { width: auto; }
 
+.admin-grid > .admin-card:nth-child(2) .admin-form > label.admin-check:nth-of-type(5) {
+  display: none !important;
+}
+
 .admin-dashboard { padding: clamp(1.25rem, 3vw, 3rem); }
 
 .admin-toolbar {
